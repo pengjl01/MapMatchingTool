@@ -40,7 +40,7 @@ public class GraphTools {
 			if (coor.equals(node1))
 				flag = true;
 			if (flag)
-				ans.add(que.poll());
+				ans.add(coor);
 			if (coor.equals(node2))
 				break;
 		}

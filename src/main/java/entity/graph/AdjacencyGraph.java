@@ -110,14 +110,14 @@ public class AdjacencyGraph implements Graph {
 		// 首先计算a与b的大小关系
 		final int xcompare;
 		if (a.x >= b.x)
-			xcompare = 1;
-		else
 			xcompare = -1;
+		else
+			xcompare = 1;
 		final int ycompare;
 		if (a.y >= b.y)
-			ycompare = 1;
-		else
 			ycompare = -1;
+		else
+			ycompare = 1;
 //		定义比较器
 		Comparator<Coordinate> comparator = new Comparator<Coordinate>() {
 			@Override
@@ -147,22 +147,23 @@ public class AdjacencyGraph implements Graph {
 		return GraphTools.cutQueueAndBuildList(a, b, que);
 	}
 
-//	node1和node2之间的连接性不会被改变（应该不会影响astar）
 	@Override
 	public boolean cutAndAdd(Coordinate node1, Coordinate node2, Coordinate newNode) {
-		Integer index1 = getIndex(node1);
-		Integer index2 = getIndex(node2);
-		if (index1 == null || index2 == null)
-			return false;
 		if (!GraphTools.threePointCollinearity(node1, node2, newNode))
 			return false;
 		addNode(newNode);
 		Integer indexNew = getIndex(newNode);
+		List<Coordinate> list = passThroughNodes(node1, node2);
+		Coordinate[] nearestNodes = getNearestNode(list, newNode);
+		int index1 = getIndex(nearestNodes[0]);
+		int index2 = getIndex(nearestNodes[1]);
 		if (directConnected(index1, index2)) {
+			removeEdge(index1, index2);
 			addEdge(index1, indexNew);
 			addEdge(indexNew, index2);
 		}
 		if (directConnected(index2, index1)) {
+			removeEdge(index2, index1);
 			addEdge(index2, indexNew);
 			addEdge(indexNew, index1);
 		}
@@ -171,47 +172,45 @@ public class AdjacencyGraph implements Graph {
 
 	@Override
 	public boolean repareCut(Coordinate node1, Coordinate node2, Coordinate newNode) {
-		Integer index1 = getIndex(node1);
-		Integer index2 = getIndex(node2);
-		if (index1 == null || index2 == null)
-			return false;
 		if (!GraphTools.threePointCollinearity(node1, node2, newNode))
 			return false;
 		Integer indexNew = getIndex(newNode);
-		if (indexNew != nodesList.size() - 1)
-			return false;
+		List<Coordinate> list = passThroughNodes(node1, node2);
+		Coordinate[] nearestNodes = getNearestNode(list, newNode);
+		int index1 = getIndex(nearestNodes[0]);
+		int index2 = getIndex(nearestNodes[1]);
+		if (directConnected(index1, indexNew)) {
+			addEdge(index1, index2);
+			removeEdge(index1, indexNew);
+		}
+		if (directConnected(index2, indexNew)) {
+			addEdge(index2, index1);
+			removeEdge(index2, indexNew);
+		}
 		removeLastNode();
-		removeEdge(index1, indexNew);
-		removeEdge(index2, indexNew);
 		return true;
 	}
 
-	@Override
-	public void showGraph() {
-		System.out.print(this.toString());
-//		System.out.println("------------------------");
-//		System.out.println("Nodes:");
-//		for (int i = 0; i < nodesList.size(); ++i) {
-//			System.out.println("  index: " + i + " coor: " + nodesList.get(i));
-//			Set<Integer> e = edges.get(i);
-//			System.out.print("  Edges: ");
-//			for (Integer ed : e) {
-//				System.out.print(" " + ed);
-//			}
-//			System.out.println();
-//		}
-//		System.out.println("------------------------");
+	private Coordinate[] getNearestNode(List<Coordinate> list, Coordinate coor) {
+		Coordinate[] ans = new Coordinate[2];
+		for (int i = 1; i < list.size() - 1; ++i) {
+			if (list.get(i).equals(coor)) {
+				ans[0] = list.get(i - 1);
+				ans[1] = list.get(i + 1);
+				return ans;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder strbuilder = new StringBuilder();
 		strbuilder.append("------------------------\n");
-		strbuilder.append("Nodes:\n");
 		for (int i = 0; i < nodesList.size(); ++i) {
-			strbuilder.append("  index: " + i + " coor: " + nodesList.get(i) + "\n");
+			strbuilder.append("index: " + i + " coor: " + nodesList.get(i) + "\n");
 			Set<Integer> e = edges.get(i);
-			strbuilder.append("  Edges: ");
+			strbuilder.append("Connected: ");
 			for (Integer ed : e) {
 				strbuilder.append(" " + ed);
 			}

@@ -36,6 +36,7 @@ public interface Graph {
 
 	/*
 	 * 在node1和node2之间切开，添加newNode节点。
+	 * node1和node2的传入可以快速确定切割位置，并且防止误切割（切割点正好在两条不联通道路交叉口，若不传，则有两种切割方式）
 	 */
 	public boolean cutAndAdd(Coordinate node1, Coordinate node2, Coordinate newNode);
 
@@ -43,11 +44,6 @@ public interface Graph {
 	 * cutAndAdd反操作,只能移除最后一个节点
 	 */
 	public boolean repareCut(Coordinate node1, Coordinate node2, Coordinate newNode);
-
-	/*
-	 * 输出图
-	 */
-	public void showGraph();
 
 	void addNodes(MultiLineString geom);
 
