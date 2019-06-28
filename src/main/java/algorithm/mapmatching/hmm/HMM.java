@@ -280,23 +280,29 @@ public class HMM extends MatcherIMPL {
 	}
 
 	/*
-	 * 对可能的点进行tp的计算
+	 * tp的计算
 	 */
 	double getTransitionProbility(RoadSegment lineFeature, Graph graph, Coordinate closestCoordinate, HMMNode h,
 			Double distance, List<Coordinate> path) {
-		double tp = Double.NEGATIVE_INFINITY;
-		String roadid1 = lineFeature.getID();
-		String roadid2 = h.road.getID();
-//		两个点匹配在同一个道路上
-		if (roadid1.equals(roadid2)) {
-			tp = getSameSegmentTP(lineFeature, graph, closestCoordinate, h, distance, path);
+		Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
+		Coordinate[] nearestNode = h.road.getClosestNodes(h.matchedCoor);
+		boolean status = false, status1 = false, status2 = false, status3 = false;
+		if (nowNodes != null) {
+			status = graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate);
 		}
-//		两个点匹配在图的不同段上
-		else {
-			tp = getDiffSegmentTP(lineFeature, graph, closestCoordinate, h, distance, path);
+		if (nearestNode != null) {
+			status1 = graph.cutAndAdd(nearestNode[0], nearestNode[1], h.matchedCoor);
 		}
-//		tp与之前点的概率相乘，得到最终tp
-		return tp * h.prob;
+		Astar astar = new Astar(graph, closestCoordinate, h.matchedCoor);
+		path = astar.findCoordinatePath();
+		if (nearestNode != null) {
+			status2 = graph.repareCut(nearestNode[0], nearestNode[1], h.matchedCoor);
+		}
+		if (nowNodes != null) {
+			status3 = graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
+		}
+		System.out.println(status + " " + status1 + " " + status2 + " " + status3);
+		return getTransitionProbility(Math.abs(astar.routeDistance()), distance) * h.prob;
 	}
 
 	/*
@@ -308,82 +314,6 @@ public class HMM extends MatcherIMPL {
 		}
 		double dt = Math.abs(Math.abs(distance) - Math.abs(roadDistance));
 		return dt > LowProbabilityRoutes ? 0 : (Math.pow(Math.E, -(dt / BETA))) / BETA;
-	}
-
-	/*
-	 * 求转移概率tp,addDistance为匹配点到端点的距离
-	 */
-	double getTransitionProbility(Coordinate a, Coordinate b, Graph g, double addDistance, double distance,
-			List<Coordinate> path) {
-		Astar astar = new Astar(g, a, b);
-		path = astar.findCoordinatePath();
-		return getTransitionProbility(Math.abs(astar.routeDistance()) + Math.abs(addDistance), distance);
-	}
-
-	/*
-	 * tp计算（两个点在同一个道路上（是否在同一段上仍需确认））
-	 */
-	double getSameSegmentTP(RoadSegment lineFeature, Graph graph, Coordinate closestCoordinate, HMMNode h,
-			Double distance, List<Coordinate> path) {
-		double tp = Double.NEGATIVE_INFINITY;
-		char oneway = lineFeature.getOneway();
-		LocationIndexedLine line = new LocationIndexedLine(lineFeature.getGeom());
-		LinearLocation llthis = line.project(closestCoordinate);
-		LinearLocation llpre = line.project(h.matchedCoor);
-//		两个点在同一个段上且符合道路方向性限制
-		if (onSameSegment(oneway, llthis, llpre)) {
-			return getTransitionProbility(closestCoordinate.distance(h.matchedCoor), distance);
-		} else {
-			tp = getDiffSegmentTP(lineFeature, graph, closestCoordinate, h, distance, path);
-		}
-		return tp;
-	}
-
-	boolean onSameSegment(char oneway, LinearLocation llthis, LinearLocation llpre) {
-//		return llthis.getSegmentIndex() == llpre.getSegmentIndex()
-//				&& llthis.getComponentIndex() == llpre.getComponentIndex()
-//				&& (oneway == 'B' || (oneway == 'F' && llthis.getSegmentFraction() >= llpre.getSegmentFraction())
-//						|| (oneway == 'T' && llthis.getSegmentFraction() <= llpre.getSegmentFraction()));
-		if (llthis.getSegmentIndex() != llpre.getSegmentIndex())
-			return false;
-		if (llthis.getComponentIndex() != llpre.getComponentIndex())
-			return false;
-		if (oneway == 'F') {
-			if (llthis.getSegmentFraction() >= llpre.getSegmentFraction()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		if (oneway == 'T')
-			if (llthis.getSegmentFraction() <= llpre.getSegmentFraction()) {
-				return true;
-			} else {
-				return false;
-			}
-		return true;
-	}
-
-	/*
-	 * tp计算（不在同一段上）
-	 */
-	double getDiffSegmentTP(RoadSegment lineFeature, Graph graph, Coordinate closestCoordinate, HMMNode h,
-			Double distance, List<Coordinate> path) {
-		double tp = Double.NEGATIVE_INFINITY;
-		Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
-		Coordinate[] nearestNode = h.road.getClosestNodes(h.matchedCoor);
-		for (Coordinate now : nowNodes) {
-			for (Coordinate pre : nearestNode) {
-				List<Coordinate> temppath = null;
-				double temptp = getTransitionProbility(pre, now, graph,
-						closestCoordinate.distance(now) + h.matchedCoor.distance(pre), distance, temppath);
-				if (temptp > tp) {
-					tp = temptp;
-					path = temppath;
-				}
-			}
-		}
-		return tp;
 	}
 
 	public static void main(String[] args) {

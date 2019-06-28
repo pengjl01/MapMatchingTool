@@ -38,6 +38,24 @@ public class AdjacencyGraphTest extends AdjacencyGraph {
 		assertEquals("(2,5)", coorList.get(2), b);
 	}
 
+	@Test
+	public void AstarDelEdgeTest() throws Exception {
+		Graph graph = AdjacencyGraphTest.buildSampleAdjacencyGraph();
+		String origin = graph.toString();
+		Coordinate node1 = new Coordinate(1, 7);
+		Coordinate node2 = new Coordinate(6, 7);
+		Coordinate newNode = new Coordinate(5, 7);
+		graph.cutAndAdd(node1, node2, newNode);
+		Coordinate node11 = new Coordinate(3, 5);
+		Coordinate node21 = new Coordinate(1, 6);
+		Coordinate newNode1 = new Coordinate(2, 5.5);
+		graph.cutAndAdd(node11, node21, newNode1);
+		graph.repareCut(node11, node21, newNode1);
+		graph.repareCut(node1, node2, newNode);
+		String after = graph.toString();
+		assertEquals("删掉加入的节点后图应该和之前一样", origin, after);
+	}
+
 	public static AdjacencyGraph buildSampleAdjacencyGraph() {
 		WKTReader reader = new WKTReader(JTSFactoryFinder.getGeometryFactory());
 		try {
