@@ -52,8 +52,8 @@ public class Tools {
 			} catch (Exception e) {
 			}
 		}
-		ans[0] = c1 == null ? null : calcDirection(c, c1);
-		ans[1] = c2 == null ? null : calcDirection(c, c2);
+		ans[0] = c1 == null ? null : calcDirection(c1, c);
+		ans[1] = c2 == null ? null : calcDirection(c2, c);
 		return ans;
 	}
 //	public static List<LocationIndexedLine> getPossibleRoads2(Coordinate GPSCoordinate, SpatialIndex index,

@@ -93,10 +93,4 @@ public class FWMM extends HMM {
 		}
 		return calcDirectionProb(delta);
 	}
-
-	public static void main(String[] args) {
-		Integer integer = 130;
-		Double direction = Double.valueOf(integer) / 180 * Math.PI;
-		System.out.println(direction);
-	}
 }

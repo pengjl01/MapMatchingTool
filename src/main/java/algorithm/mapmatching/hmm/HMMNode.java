@@ -13,6 +13,8 @@ public class HMMNode {
 //	public Long osm_id;
 	public RoadSegment road;// 该节点对应的道路feature
 	public PointFeature point;
+	public Coordinate prepCoordinate;
+	public Coordinate[] nearestNode;
 
 	public HMMNode(double prob, HMMNode parent, Coordinate lastCoordinate, RoadSegment road, PointFeature point) {
 		this.parent = parent;
@@ -20,5 +22,7 @@ public class HMMNode {
 		this.matchedCoor = lastCoordinate;
 		this.road = road;
 		this.point = point;
+		prepCoordinate = (this.point.getPoint()).getCoordinate();
+		nearestNode = this.road.getClosestNodes(this.matchedCoor);
 	}
 }

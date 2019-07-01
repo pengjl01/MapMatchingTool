@@ -37,8 +37,8 @@ public class App {
 		boolean debug = true;
 //		Matcher m = new SimpleDistance(index);
 		Matcher m = new HMM(index, debug);
-//		Matcher m = new MyMatcher(index, debug);
-//		Matcher m = new MyMatcherFast(index, debug);
+//		Matcher m = new FWMM(index, debug);
+//		Matcher m = new FWMMFast(index, debug);
 		String FILE = "13321164368_00036";
 		String POINTFILE = PATH + FILE + ".shp";
 		String RESULT = RESULTPATH + FILE + "_result_temp.txt";

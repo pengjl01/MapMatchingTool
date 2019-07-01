@@ -70,8 +70,11 @@ public class HMM extends MatcherIMPL {
 
 	@Override
 	public void matchFeature(int i) {
+		if (i == 9) {
+			System.out.println();
+		}
 		if (debug) {
-			System.out.println("--------------------------");
+			System.out.println("--------------------------" + i);
 		}
 		datetime = origin.get(i).getTime();
 		// 判定重置马尔科夫链(两点时间差大于设定值)
@@ -148,11 +151,7 @@ public class HMM extends MatcherIMPL {
 		if (lines.size() > 0) {
 			Graph graph = new AdjacencyGraph(lines);
 			for (RoadSegment lineFeature : lines) {
-				LocationIndexedLine line = new LocationIndexedLine(lineFeature.getGeom());
-//				备选道路上与当前点距离最近的点
-				Coordinate closestCoordinate = line.extractPoint(line.project(pCoordinate));
-				HMMNode hmmNode = getNextHMMNode(pointFeature, lineFeature, graph, pCoordinate, closestCoordinate,
-						line);
+				HMMNode hmmNode = getNextHMMNode(pointFeature, lineFeature, graph, pCoordinate);
 				if (hmmNode != null)
 					nextStateMap.add(hmmNode);
 			}
@@ -162,17 +161,20 @@ public class HMM extends MatcherIMPL {
 		return nextStateMap;
 	}
 
-	HMMNode getNextHMMNode(PointFeature pointFeature, RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
-			Coordinate closestCoordinate, LocationIndexedLine line) {
+	HMMNode getNextHMMNode(PointFeature pointFeature, RoadSegment lineFeature, Graph graph, Coordinate pCoordinate) {
+		LocationIndexedLine line = new LocationIndexedLine(lineFeature.getGeom());
+//		备选道路上与当前点距离最近的点
+		Coordinate closestCoordinate = line.extractPoint(line.project(pCoordinate));
 //		计算各参数
 		Map<String, Object> paramsMap = getParamsMap(lineFeature, graph, pCoordinate, closestCoordinate, pointFeature,
 				line);
 //		计算最终概率
 		double prob = calcProb(paramsMap);
-		if (prob > 0) {
+		if (debug) {
 			String osmid = lineFeature.getID();
-			if (debug)
-				System.out.println("road id:" + osmid + " prob:" + prob);
+			System.out.println("road id:" + osmid + " prob:" + prob);
+		}
+		if (prob > 0) {
 			HMMNode parentNode = ((TPData) paramsMap.get("tpData")).parentNode;
 			return new HMMNode(prob, parentNode, closestCoordinate, lineFeature, pointFeature);
 		}
@@ -207,10 +209,17 @@ public class HMM extends MatcherIMPL {
 	TPData getBestTP(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate, Coordinate closestCoordinate) {
 		TPData tpData = new TPData();
 		double maxtp = Double.NEGATIVE_INFINITY;
+//		候选匹配点最近的两个节点
+		Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
+		if (nowNodes != null) {
+//			把当前点添加到图
+			if (!graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate)) {
+				System.out.println("HMM getBestTP UnknownError");
+				return tpData;
+			}
+		}
 		for (HMMNode h : preState) {
-			Coordinate prepCoordinate = (h.point.getPoint()).getCoordinate();
-			double temptp = getTransitionProbility(lineFeature, graph, closestCoordinate, h,
-					prepCoordinate.distance(pCoordinate));
+			double temptp = getTransitionProbility(graph, closestCoordinate, h);
 			if (debug) {
 				String preosmid = h.road.getID();
 				System.out.println("    road id:" + preosmid + " tp:" + temptp);
@@ -220,9 +229,55 @@ public class HMM extends MatcherIMPL {
 				tpData.parentNode = h;
 			}
 		}
+
+		if (nowNodes != null) {
+			graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
+		}
 		if (maxtp > 0)
 			tpData.tp = maxtp;
 		return tpData;
+	}
+
+	/*
+	 * tp的计算
+	 */
+	double getTransitionProbility(Graph graph, Coordinate closestCoordinate, HMMNode h) {
+		if (closestCoordinate.equals(h.matchedCoor))
+			return getTransitionProbility(0, 0) * h.prob;
+		if (h.nearestNode != null) {
+			if (!graph.cutAndAdd(h.nearestNode[0], h.nearestNode[1], h.matchedCoor)) {
+				System.out.println("HMM getTransitionProbility UnknownError");
+				return 0.0;
+			}
+		}
+		Astar astar = new Astar(graph, h.matchedCoor, closestCoordinate);
+		if (h.nearestNode != null) {
+			graph.repareCut(h.nearestNode[0], h.nearestNode[1], h.matchedCoor);
+		}
+		return getTransitionProbility(Math.abs(astar.routeDistance()), h.prepCoordinate.distance(closestCoordinate))
+				* h.prob;
+	}
+
+	/*
+	 * 求转移概率tp基础版
+	 */
+	double getTransitionProbility(double roadDistance, double distance) {
+		if (debug) {
+			System.out.println("  roadDistance:" + roadDistance + " distance:" + distance);
+		}
+		double dt = Math.abs(Math.abs(distance) - Math.abs(roadDistance));
+		return dt > LowProbabilityRoutes ? 0 : (Math.pow(Math.E, -(dt / BETA))) / BETA;
+	}
+
+	/*
+	 * 求某道路的可能概率 假设数据是服从高斯分布
+	 */
+	double getEmissionProbility(double distance) {
+		if (distance < MAX_RADIUS) {
+			return gd.probabilityDensity(distance);
+		} else {
+			return 0.0;
+		}
 	}
 
 	/*
@@ -262,66 +317,5 @@ public class HMM extends MatcherIMPL {
 		}
 		preState.clear();
 		matchingFeatureIndexs.clear();
-	}
-
-	/*
-	 * 求某道路的可能概率 假设数据是服从二维高斯分布
-	 */
-	double getEmissionProbility(double distance) {
-		if (distance < MAX_RADIUS) {
-			return gd.probabilityDensity(distance);
-		} else {
-			return 0.0;
-		}
-	}
-
-	double getTransitionProbility(RoadSegment lineFeature, Graph graph, Coordinate closestCoordinate, HMMNode h,
-			Double distance) {
-		return getTransitionProbility(lineFeature, graph, closestCoordinate, h, distance, null);
-	}
-
-	/*
-	 * tp的计算
-	 */
-	double getTransitionProbility(RoadSegment lineFeature, Graph graph, Coordinate closestCoordinate, HMMNode h,
-			Double distance, List<Coordinate> path) {
-		if (closestCoordinate.equals(h.matchedCoor))
-			return getTransitionProbility(0, 0) * h.prob;
-		Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
-		Coordinate[] nearestNode = h.road.getClosestNodes(h.matchedCoor);
-		if (nowNodes != null) {
-			graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate);
-		}
-		if (nearestNode != null) {
-			graph.cutAndAdd(nearestNode[0], nearestNode[1], h.matchedCoor);
-		}
-		Astar astar = new Astar(graph, h.matchedCoor, closestCoordinate);
-		path = astar.findCoordinatePath();
-		if (nearestNode != null) {
-			graph.repareCut(nearestNode[0], nearestNode[1], h.matchedCoor);
-		}
-		if (nowNodes != null) {
-			graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
-		}
-		return getTransitionProbility(Math.abs(astar.routeDistance()), distance) * h.prob;
-	}
-
-	/*
-	 * 求转移概率tp基础版
-	 */
-	double getTransitionProbility(double roadDistance, double distance) {
-		if (debug) {
-			System.out.println("  roadDistance:" + roadDistance + " distance:" + distance);
-		}
-		double dt = Math.abs(Math.abs(distance) - Math.abs(roadDistance));
-		return dt > LowProbabilityRoutes ? 0 : (Math.pow(Math.E, -(dt / BETA))) / BETA;
-	}
-
-	public static void main(String[] args) {
-		HMM aHmm = new HMM(null);
-		for (int i = 0; i < 300; i += 10) {
-			System.out.println(i + " : " + aHmm.getEmissionProbility(i));
-		}
-
 	}
 }

@@ -56,15 +56,15 @@ public abstract class MatcherIMPL implements Matcher {
 	 */
 	@Override
 	public final SimpleFeatureCollection match(SimpleFeatureCollection points) {
-		return match(points, 0, origin.size());
+		return match(points, 0, -1);
 	};
 
 	@Override
 	public final SimpleFeatureCollection match(SimpleFeatureCollection points, int start, int end) {
-		if (end == -1)
-			end = origin.size();
 		pfb = new PointFeatureBuilder(points);
 		initMatch(points);
+		if (end == -1)
+			end = origin.size();
 		match(start, end);
 		return genarateSFC(pfb.getFeatureType(), start, end);
 	};
