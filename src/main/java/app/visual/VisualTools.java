@@ -154,8 +154,7 @@ public class VisualTools {
 		try {
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(result), "UTF-8"));
 			while (i.hasNext()) {
-				Long roadid = (Long) i.next().getProperty("id").getValue();
-				bw.write(String.valueOf(roadid));
+				bw.write((String) i.next().getProperty("road_id").getValue());
 				bw.newLine();
 			}
 		} catch (UnsupportedEncodingException e) {

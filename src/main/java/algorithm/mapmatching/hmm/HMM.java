@@ -171,7 +171,8 @@ public class HMM extends MatcherIMPL {
 		double prob = calcProb(paramsMap);
 		if (prob > 0) {
 			String osmid = lineFeature.getID();
-			System.out.println("road id:" + osmid + " prob:" + prob);
+			if (debug)
+				System.out.println("road id:" + osmid + " prob:" + prob);
 			HMMNode parentNode = ((TPData) paramsMap.get("tpData")).parentNode;
 			return new HMMNode(prob, parentNode, closestCoordinate, lineFeature, pointFeature);
 		}
@@ -179,13 +180,13 @@ public class HMM extends MatcherIMPL {
 	}
 
 //	由参数map计算最终权值
-	double calcProb(Map<String, Object> paramsMap) {
+	protected double calcProb(Map<String, Object> paramsMap) {
 		double ep = (double) paramsMap.get("ep");
 		TPData tpData = (TPData) paramsMap.get("tpData");
 		return ep * tpData.tp;
 	}
 
-	Map<String, Object> getParamsMap(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
+	protected Map<String, Object> getParamsMap(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
 			Coordinate closestCoordinate, PointFeature pointFeature, LocationIndexedLine line) {
 		Map<String, Object> paramsMap = new HashMap<String, Object>();
 		double distance = closestCoordinate.distance(pCoordinate);
@@ -284,24 +285,24 @@ public class HMM extends MatcherIMPL {
 	 */
 	double getTransitionProbility(RoadSegment lineFeature, Graph graph, Coordinate closestCoordinate, HMMNode h,
 			Double distance, List<Coordinate> path) {
+		if (closestCoordinate.equals(h.matchedCoor))
+			return getTransitionProbility(0, 0) * h.prob;
 		Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
 		Coordinate[] nearestNode = h.road.getClosestNodes(h.matchedCoor);
-		boolean status = false, status1 = false, status2 = false, status3 = false;
 		if (nowNodes != null) {
-			status = graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate);
+			graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate);
 		}
 		if (nearestNode != null) {
-			status1 = graph.cutAndAdd(nearestNode[0], nearestNode[1], h.matchedCoor);
+			graph.cutAndAdd(nearestNode[0], nearestNode[1], h.matchedCoor);
 		}
-		Astar astar = new Astar(graph, closestCoordinate, h.matchedCoor);
+		Astar astar = new Astar(graph, h.matchedCoor, closestCoordinate);
 		path = astar.findCoordinatePath();
 		if (nearestNode != null) {
-			status2 = graph.repareCut(nearestNode[0], nearestNode[1], h.matchedCoor);
+			graph.repareCut(nearestNode[0], nearestNode[1], h.matchedCoor);
 		}
 		if (nowNodes != null) {
-			status3 = graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
+			graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
 		}
-		System.out.println(status + " " + status1 + " " + status2 + " " + status3);
 		return getTransitionProbility(Math.abs(astar.routeDistance()), distance) * h.prob;
 	}
 

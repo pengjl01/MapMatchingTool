@@ -158,7 +158,6 @@ public abstract class MatcherIMPL implements Matcher {
 //		}
 //		return modificationCollection;
 //	}
-
 	/*
 	 * 取出周围的道路
 	 */

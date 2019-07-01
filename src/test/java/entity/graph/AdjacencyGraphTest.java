@@ -31,11 +31,11 @@ public class AdjacencyGraphTest extends AdjacencyGraph {
 		assertEquals("(1,3)", coorList.get(4), b);
 		a = new Coordinate(4, 5);
 		b = new Coordinate(2, 5);
-		coorList = graph.passThroughNodes(a, b);
+		coorList = graph.passThroughNodes(b, a);
 		assertEquals("size=3", coorList.size(), 3);
-		assertEquals("(4,5)", coorList.get(0), a);
+		assertEquals("(2,5)", coorList.get(0), b);
 		assertEquals("(3,5)", coorList.get(1), new Coordinate(3, 5));
-		assertEquals("(2,5)", coorList.get(2), b);
+		assertEquals("(4,5)", coorList.get(2), a);
 	}
 
 	@Test

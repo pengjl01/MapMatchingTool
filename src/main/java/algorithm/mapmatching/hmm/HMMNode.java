@@ -17,9 +17,7 @@ public class HMMNode {
 	public HMMNode(double prob, HMMNode parent, Coordinate lastCoordinate, RoadSegment road, PointFeature point) {
 		this.parent = parent;
 		this.prob = prob;
-//		this.idx = idx;
 		this.matchedCoor = lastCoordinate;
-//		this.osm_id = osm_id;
 		this.road = road;
 		this.point = point;
 	}

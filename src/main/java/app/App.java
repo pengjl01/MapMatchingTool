@@ -21,8 +21,8 @@ import data.tools.DataTools;
 public class App {
 	static String TITLE = "my-mapmatching";
 //	D:\study\研究生\毕业论文\data\map\myosm
-//	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\myosm\\bj_small.shp";
-	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\bj2011\\myshp\\road_network.shp";
+	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\myosm\\bj_small.shp";
+//	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\bj2011\\myshp\\road_network.shp";
 //	D:\study\研究生\毕业论文\data\data_来自es\myshpdata
 	static String PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myshpdata\\";
 	static String RESULTPATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresult\\";
@@ -45,7 +45,7 @@ public class App {
 		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(new File(POINTFILE), trans);
 
 		long start = System.currentTimeMillis();
-		SimpleFeatureCollection pointMatched = m.match(pointOrigin, 0, 20);
+		SimpleFeatureCollection pointMatched = m.match(pointOrigin, 0, 100);
 		System.out.println("轨迹共" + pointMatched.size() + "个点");
 		System.out.println("匹配耗时" + (System.currentTimeMillis() - start) / 1000 + "s");
 //			matchDiff有问题，目前不可用
