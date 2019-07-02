@@ -9,7 +9,7 @@ import org.geotools.swing.JMapFrame;
 import org.locationtech.jts.index.SpatialIndex;
 
 import algorithm.mapmatching.Matcher;
-import algorithm.mapmatching.hmm.HMM;
+import algorithm.mapmatching.fwmm.FWMM;
 import app.visual.VisualTools;
 import data.datareader.SHPReader;
 import data.tools.DataTools;
@@ -18,15 +18,12 @@ import data.tools.DataTools;
  * Hello world!
  *
  */
-public class App {
+public class App3 {
 	static String TITLE = "my-mapmatching";
-//	D:\study\研究生\毕业论文\data\map\myosm
-	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\myosm\\bj_small.shp";
-//	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\bj2011\\myshp\\road_network.shp";
-//	D:\study\研究生\毕业论文\data\data_来自es\myshpdata
-	static String PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myshpdata\\";
-	static String RESULTPATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresult\\";
-	static boolean trans = true;
+	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\小论文\\mapmatching\\testdata\\shpdata\\road_network.shp";
+	static String POINTFILE = "D:\\study\\研究生\\毕业论文\\小论文\\mapmatching\\testdata\\shpdata\\gps_data.shp";
+	static String RESULT = "D:\\study\\研究生\\毕业论文\\小论文\\mapmatching\\testdata\\result.txt";
+	static boolean trans = false;
 
 	public static void main(String[] args) throws Exception {
 		// display a data store file chooser dialog for shapefiles
@@ -36,14 +33,11 @@ public class App {
 		SpatialIndex index = DataTools.buildSTRTree(roadCollection);
 		boolean debug = false;
 //		Matcher m = new SimpleDistance(index);
-		Matcher m = new HMM(index, debug);
-//		Matcher m = new FWMM(index, debug);
+//		Matcher m = new HMM(index, debug);
+		Matcher m = new FWMM(index, debug);
 //		Matcher m = new FWMMFast(index, debug);
-		String FILE = "13321164368_00036";
-		String POINTFILE = PATH + FILE + ".shp";
-		String RESULT = RESULTPATH + FILE + "_result_temp.txt";
-		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(new File(POINTFILE), trans);
 
+		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(new File(POINTFILE), trans);
 		long start = System.currentTimeMillis();
 		SimpleFeatureCollection pointMatched = m.match(pointOrigin, 0, -100);
 		System.out.println("轨迹共" + pointMatched.size() + "个点");
@@ -64,7 +58,5 @@ public class App {
 //			}
 		VisualTools.addRoad(map, roadCollection);
 		JMapFrame.showMap(map);
-
-		VisualTools.saveResult(pointMatched, RESULT);
 	}
 }

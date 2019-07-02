@@ -1,5 +1,6 @@
 package algorithm.mapmatching.fwmm;
 
+import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -52,7 +53,7 @@ public class FWMM extends HMM {
 		char oneway = lineFeature.getOneway();
 		Double direction = pointFeature.getDirection();
 		if (direction > 0) {
-			Double[] lineDirection = Tools.getRoadDirection(line, closestCoordinate, oneway);
+			List<Double> lineDirection = Tools.getRoadDirection(line, closestCoordinate, oneway);
 			Double directionProb = calcDirectionProb(direction, lineDirection);
 			if (debug && directionProb > 0) {
 				System.out.print("  directionProb:" + directionProb + "  pointDirection:" + direction * 180 / Math.PI
@@ -75,22 +76,16 @@ public class FWMM extends HMM {
 		return dp < 0 ? 0.0 : dp;
 	}
 
-	Double calcDirectionProb(Double d1, Double d2) {
-		if (d1 == null || d2 == null)
-			return 0.0;
-		return calcDirectionProb(d1 - d2);
-	}
-
-	Double calcDirectionProb(Double d1, Double[] d2) {
-		if (d1 == null || d2 == null || d2.length == 0)
-			return 0.0;
-		Double delta = Math.PI;
-		for (Double d : d2) {
-			if (d != null) {
-				Double temp = Math.abs(d - d1);
-				delta = temp < delta ? temp : delta;
+	Double calcDirectionProb(Double d1, List<Double> d2) {
+		Double ans = 0.0;
+		if (d1 != null && d2 != null && d2.size() != 0) {
+			for (Double d : d2) {
+				if (d != null) {
+					Double temp = calcDirectionProb(Math.abs(d - d1));
+					ans = temp > ans ? temp : ans;
+				}
 			}
 		}
-		return calcDirectionProb(delta);
+		return ans;
 	}
 }

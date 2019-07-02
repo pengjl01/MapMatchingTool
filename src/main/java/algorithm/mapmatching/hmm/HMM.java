@@ -70,12 +70,7 @@ public class HMM extends MatcherIMPL {
 
 	@Override
 	public void matchFeature(int i) {
-		if (i == 9) {
-			System.out.println();
-		}
-		if (debug) {
-			System.out.println("--------------------------" + i);
-		}
+		System.out.println("--------------------------" + i);
 		datetime = origin.get(i).getTime();
 		// 判定重置马尔科夫链(两点时间差大于设定值)
 		if (preDatetime != null && datetime - preDatetime > maxInterval) {
@@ -83,9 +78,7 @@ public class HMM extends MatcherIMPL {
 			preDatetime = null;
 		}
 		List<HMMNode> nextState = getNextState(origin.get(i));
-		if (debug) {
-			System.out.println("thisState size : " + nextState.size());
-		}
+		System.out.println("thisState size : " + nextState.size());
 		// 该点有效，覆盖之前的状态
 		if (nextState.size() > 0) {
 			matchingFeatureIndexs.add(i);
@@ -207,17 +200,20 @@ public class HMM extends MatcherIMPL {
 	}
 
 	TPData getBestTP(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate, Coordinate closestCoordinate) {
-		TPData tpData = new TPData();
-		double maxtp = Double.NEGATIVE_INFINITY;
-//		候选匹配点最近的两个节点
+		if (preState.size() == 0) {
+			return new TPData(1, null);
+		}
+		// 候选匹配点最近的两个节点
 		Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
 		if (nowNodes != null) {
 //			把当前点添加到图
 			if (!graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate)) {
 				System.out.println("HMM getBestTP UnknownError");
-				return tpData;
+				return new TPData();
 			}
 		}
+		double maxtp = 0;
+		HMMNode bestParent = null;
 		for (HMMNode h : preState) {
 			double temptp = getTransitionProbility(graph, closestCoordinate, h);
 			if (debug) {
@@ -226,16 +222,13 @@ public class HMM extends MatcherIMPL {
 			}
 			if (temptp > maxtp) {
 				maxtp = temptp;
-				tpData.parentNode = h;
+				bestParent = h;
 			}
 		}
-
 		if (nowNodes != null) {
 			graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
 		}
-		if (maxtp > 0)
-			tpData.tp = maxtp;
-		return tpData;
+		return new TPData(maxtp, bestParent);
 	}
 
 	/*

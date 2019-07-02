@@ -63,7 +63,7 @@ public abstract class MatcherIMPL implements Matcher {
 	public final SimpleFeatureCollection match(SimpleFeatureCollection points, int start, int end) {
 		pfb = new PointFeatureBuilder(points);
 		initMatch(points);
-		if (end == -1)
+		if (end <= 0)
 			end = origin.size();
 		match(start, end);
 		return genarateSFC(pfb.getFeatureType(), start, end);
