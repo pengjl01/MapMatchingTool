@@ -70,7 +70,9 @@ public class HMM extends MatcherIMPL {
 
 	@Override
 	public void matchFeature(int i) {
-		System.out.println("--------------------------" + i);
+		if (debug) {
+			System.out.println("--------------------------" + i);
+		}
 		datetime = origin.get(i).getTime();
 		// 判定重置马尔科夫链(两点时间差大于设定值)
 		if (preDatetime != null && datetime - preDatetime > maxInterval) {
@@ -78,7 +80,9 @@ public class HMM extends MatcherIMPL {
 			preDatetime = null;
 		}
 		List<HMMNode> nextState = getNextState(origin.get(i));
-		System.out.println("thisState size : " + nextState.size());
+		if (debug) {
+			System.out.println("thisState size : " + nextState.size());
+		}
 		// 该点有效，覆盖之前的状态
 		if (nextState.size() > 0) {
 			matchingFeatureIndexs.add(i);
@@ -208,7 +212,6 @@ public class HMM extends MatcherIMPL {
 		if (nowNodes != null) {
 //			把当前点添加到图
 			if (!graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate)) {
-				System.out.println("HMM getBestTP UnknownError");
 				return new TPData();
 			}
 		}
@@ -239,7 +242,6 @@ public class HMM extends MatcherIMPL {
 			return getTransitionProbility(0, 0) * h.prob;
 		if (h.nearestNode != null) {
 			if (!graph.cutAndAdd(h.nearestNode[0], h.nearestNode[1], h.matchedCoor)) {
-				System.out.println("HMM getTransitionProbility UnknownError");
 				return 0.0;
 			}
 		}

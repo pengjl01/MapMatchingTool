@@ -19,7 +19,7 @@ public class GraphTools {
 	public static boolean threePointCollinearity(Coordinate a, Coordinate b, Coordinate c) {
 		double s = (a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * a.y - a.x * c.y);
 		double l = a.distance(b);
-		return Math.abs(s / l / l) < 0.0002;
+		return Math.abs(s / l / l) < 0.002;
 	}
 
 //	/*

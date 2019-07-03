@@ -1,13 +1,8 @@
-package app.visual;
+package app.tools;
 
 import java.awt.Color;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +22,15 @@ import org.geotools.map.MapContent;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
+import org.geotools.swing.JMapFrame;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.index.SpatialIndex;
 import org.opengis.feature.simple.SimpleFeature;
+
+import data.datareader.SHPReader;
 
 /*
  * @author pjl
@@ -148,37 +146,6 @@ public class VisualTools {
 		return modificationCollection;
 	}
 
-	public static void saveResult(SimpleFeatureCollection pointMatched, String result) {
-		SimpleFeatureIterator i = pointMatched.features();
-		BufferedWriter bw = null;
-		try {
-			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(result), "UTF-8"));
-			while (i.hasNext()) {
-				bw.write((String) i.next().getProperty("road_id").getValue());
-				bw.newLine();
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			i.close();
-			if (bw != null) {
-				try {
-					bw.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
 	public static SimpleFeatureCollection point2Route(SimpleFeatureCollection pointCollection, SpatialIndex index) {
 		return point2Route(DataUtilities.source(pointCollection), index);
 	}
@@ -217,5 +184,31 @@ public class VisualTools {
 			e.printStackTrace();
 		}
 		return modificationCollection;
+	}
+
+	public static void show(String originSHP, String matchedSHP, SimpleFeatureCollection roadCollection) {
+		SimpleFeatureCollection origin = SHPReader.readSHP(new File(originSHP), true);
+		SimpleFeatureCollection matched = SHPReader.readSHP(new File(matchedSHP), false);
+		show(origin, matched, roadCollection);
+	}
+
+	public static void show(SimpleFeatureCollection origin, SimpleFeatureCollection matched,
+			SimpleFeatureCollection roadCollection) {
+		MapContent map = new MapContent();
+		addLines(map, VisualTools.point2Line(origin), Color.blue);
+		addLines(map, VisualTools.point2Line(matched), Color.red);
+		addPoints(map, origin, Color.blue);
+		addPoints(map, matched, Color.red);
+		addRoad(map, roadCollection);
+		JMapFrame.showMap(map);
+	}
+
+	public static void show(String shpFile, SimpleFeatureCollection roadCollection) {
+		MapContent map = new MapContent();
+		SimpleFeatureCollection data = SHPReader.readSHP(new File(shpFile), true);
+		addLines(map, VisualTools.point2Line(data), Color.red);
+		addPoints(map, data, Color.red);
+		addRoad(map, roadCollection);
+		JMapFrame.showMap(map);
 	}
 }

@@ -1,0 +1,28 @@
+//package app;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//import app.tools.DiffTools;
+//
+///*
+// * @author pjl
+// * @version 创建时间：2019年7月3日 下午2:11:44
+// * 类说明
+// */
+//public class FindDifferents {
+//	public static void main(String[] args) {
+//		// D:\study\研究生\毕业论文\data\data_来自es\myresult
+//		String path = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresult\\";
+//		String trace = "13321164368_00036_";
+//		List<String> types = new ArrayList<String>();
+//		types.add("fwmm");
+//		types.add("hmm");
+////		files.add("simple");
+//		DiffTools.makeDiff(path + trace, types);
+////		String file1 = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresult\\my.txt";
+////		String file2 = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresult\\myfast.txt";
+////		String outString = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresult\\my_myfast.txt";
+//
+//	}
+//}

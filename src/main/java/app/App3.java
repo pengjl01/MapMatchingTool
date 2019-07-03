@@ -10,9 +10,9 @@ import org.locationtech.jts.index.SpatialIndex;
 
 import algorithm.mapmatching.Matcher;
 import algorithm.mapmatching.fwmm.FWMM;
-import app.visual.VisualTools;
+import app.tools.APPTools;
+import app.tools.VisualTools;
 import data.datareader.SHPReader;
-import data.tools.DataTools;
 
 /**
  * Hello world!
@@ -30,7 +30,7 @@ public class App3 {
 //        File file = JFileDataStoreChooser.showOpenFile("shp", null);
 		MapContent map = new MapContent();
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(ROADFILE), trans);
-		SpatialIndex index = DataTools.buildSTRTree(roadCollection);
+		SpatialIndex index = APPTools.buildSTRTree(roadCollection);
 		boolean debug = false;
 //		Matcher m = new SimpleDistance(index);
 //		Matcher m = new HMM(index, debug);

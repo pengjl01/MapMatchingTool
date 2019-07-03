@@ -149,14 +149,18 @@ public class AdjacencyGraph implements Graph {
 
 	@Override
 	public boolean cutAndAdd(Coordinate node1, Coordinate node2, Coordinate newNode) {
-		if (!GraphTools.threePointCollinearity(node1, node2, newNode))
+		if (!GraphTools.threePointCollinearity(node1, node2, newNode)) {
+			System.out.println("ERROR: " + node1 + " " + node2 + " " + newNode + " Are Not Collinear");
 			return false;
+		}
 		addNode(newNode);
 		Integer indexNew = getIndex(newNode);
 		List<Coordinate> list = passThroughNodes(node1, node2);
 		Coordinate[] nearestNodes = getNearestNode(list, newNode);
-		int index1 = getIndex(nearestNodes[0]);
-		int index2 = getIndex(nearestNodes[1]);
+		Integer index1 = getIndex(nearestNodes[0]);
+		Integer index2 = getIndex(nearestNodes[1]);
+		if (index1 == null || index2 == null)
+			return false;
 		if (directConnected(index1, index2)) {
 			removeEdge(index1, index2);
 			addEdge(index1, indexNew);

@@ -29,12 +29,13 @@ public class GraphToolsTest extends GraphTools {
 	}
 
 	public static void main(String[] args) {
-		Coordinate a = new Coordinate(1, 1);
-		Coordinate b = new Coordinate(1, 9);
-		Coordinate c = new Coordinate(3, 5);
+		Coordinate a = new Coordinate(9936326.795462517, 4443989.277008503);
+		Coordinate b = new Coordinate(9936321.773916993, 4443988.631355456);
+		Coordinate c = new Coordinate(9936322.52966565, 4443988.728527018);
 		double s = (a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * a.y - a.x * c.y);
 		double l = a.distance(b);
 		System.out.println(s + " " + l);
+		System.out.println(Math.abs(s / l / l));
 //		begintime = System.nanoTime();
 //		for (int i = 0; i < max; ++i) {
 //			threePointCollinearity0(a, b, c);
