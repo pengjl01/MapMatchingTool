@@ -8,7 +8,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.locationtech.jts.index.SpatialIndex;
 
 import algorithm.mapmatching.Matcher;
-import algorithm.mapmatching.fwmm.FWMM;
+import algorithm.mapmatching.fwmm.WMM;
 import algorithm.mapmatching.hmm.HMM;
 import algorithm.mapmatching.simpledistance.SimpleDistance;
 import app.tools.APPTools;
@@ -33,10 +33,10 @@ public class MatchAll {
 		// display a data store file chooser dialog for shapefiles
 //      File file = JFileDataStoreChooser.showOpenFile("shp", null);
 		List<Matcher> matchers = new ArrayList<Matcher>();
-		matchers.add(new FWMM(index));
+//		matchers.add(new FWMM(index));
+		matchers.add(new WMM(index));
 		matchers.add(new HMM(index));
 		matchers.add(new SimpleDistance(index));
-//		matchers.add(new FWMMFast(index));
 		File[] inputFiles = new File(PATH + "myshpdata\\").listFiles();
 		for (File file : inputFiles) {
 			if (file.isFile() && file.getName().endsWith(".shp")) {

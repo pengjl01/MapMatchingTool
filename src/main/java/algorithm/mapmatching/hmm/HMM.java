@@ -278,7 +278,7 @@ public class HMM extends MatcherIMPL {
 	/*
 	 * 从列表中找到概率最大的hmmnode
 	 */
-	static HMMNode getBest(List<HMMNode> stateMap) {
+	protected static HMMNode getBest(List<HMMNode> stateMap) {
 		HMMNode best = stateMap.get(0);
 		for (int i = 1; i < stateMap.size(); ++i) {
 			if (stateMap.get(i).prob > best.prob)
@@ -290,7 +290,7 @@ public class HMM extends MatcherIMPL {
 	/*
 	 * 结果保存，重置马尔科夫链
 	 */
-	void saveData() {
+	protected void saveData() {
 		if (debug) {
 			System.out.println("writeData,matchingFeaturesSize= " + matchingFeatureIndexs.size());
 		}

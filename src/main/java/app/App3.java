@@ -9,7 +9,7 @@ import org.geotools.swing.JMapFrame;
 import org.locationtech.jts.index.SpatialIndex;
 
 import algorithm.mapmatching.Matcher;
-import algorithm.mapmatching.fwmm.FWMM;
+import algorithm.mapmatching.fwmm.WMM;
 import app.tools.APPTools;
 import app.tools.VisualTools;
 import data.datareader.SHPReader;
@@ -34,7 +34,7 @@ public class App3 {
 		boolean debug = false;
 //		Matcher m = new SimpleDistance(index);
 //		Matcher m = new HMM(index, debug);
-		Matcher m = new FWMM(index, debug);
+		Matcher m = new WMM(index, debug);
 //		Matcher m = new FWMMFast(index, debug);
 
 		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(new File(POINTFILE), trans);

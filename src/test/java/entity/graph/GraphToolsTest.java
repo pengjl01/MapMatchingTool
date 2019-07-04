@@ -2,8 +2,14 @@ package entity.graph;
 
 import static org.junit.Assert.assertEquals;
 
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.linearref.LinearLocation;
+import org.locationtech.jts.linearref.LocationIndexedLine;
 
 /*
  * @author pjl
@@ -29,13 +35,25 @@ public class GraphToolsTest extends GraphTools {
 	}
 
 	public static void main(String[] args) {
-		Coordinate a = new Coordinate(9936326.795462517, 4443989.277008503);
-		Coordinate b = new Coordinate(9936321.773916993, 4443988.631355456);
-		Coordinate c = new Coordinate(9936322.52966565, 4443988.728527018);
+		Coordinate a = new Coordinate(9936340.638872877, 4444949.318561003);
+		Coordinate b = new Coordinate(9936342.594542818, 4444949.552331933);
+		Coordinate c = new Coordinate(9936341.548867108, 4444949.427337128);
 		double s = (a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * a.y - a.x * c.y);
 		double l = a.distance(b);
 		System.out.println(s + " " + l);
 		System.out.println(Math.abs(s / l / l));
+		WKTReader reader = new WKTReader(JTSFactoryFinder.getGeometryFactory());
+		try {
+			MultiLineString geom1 = (MultiLineString) reader.read(
+					"MULTILINESTRING ((9936340.638872877 4444949.318561003, 9936342.594542818 4444949.552331933))");
+			LocationIndexedLine lil = new LocationIndexedLine(geom1);
+			LinearLocation ll = lil.project(c);
+			Coordinate d = lil.extractPoint(ll);
+			System.out.println(d);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		begintime = System.nanoTime();
 //		for (int i = 0; i < max; ++i) {
 //			threePointCollinearity0(a, b, c);

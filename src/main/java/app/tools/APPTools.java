@@ -68,7 +68,10 @@ public class APPTools {
 
 	public static void doMatch(File inputSHP, String outputTXT, String outputSHP, Matcher matcher, SpatialIndex index) {
 		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(inputSHP, trans);
+		long start = System.currentTimeMillis();
 		SimpleFeatureCollection pointMatched = matcher.match(pointOrigin);
+		System.out.println("轨迹共" + pointMatched.size() + "个点");
+		System.out.println("匹配耗时" + (System.currentTimeMillis() - start) / 1000 + "s");
 		saveResultTXT(pointMatched, outputTXT);
 		saveResultSHP(pointMatched, outputSHP);
 	}
