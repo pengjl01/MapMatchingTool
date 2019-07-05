@@ -10,8 +10,8 @@ import org.locationtech.jts.index.SpatialIndex;
 import algorithm.mapmatching.Matcher;
 import algorithm.mapmatching.fwmm.FWMM;
 import algorithm.mapmatching.fwmm.WMM;
-import algorithm.mapmatching.hmm.HMM;
 import app.tools.APPTools;
+import app.tools.DiffTools;
 import app.tools.VisualTools;
 import data.datareader.SHPReader;
 
@@ -63,7 +63,7 @@ public class App {
 		List<Matcher> matchers = new ArrayList<Matcher>();
 		matchers.add(new FWMM(index));
 		matchers.add(new WMM(index));
-		matchers.add(new HMM(index));
+//		matchers.add(new HMM(index));
 //		matchers.add(new SimpleDistance(index));
 		String FILE = "13321174881_00006";
 		for (Matcher m : matchers) {
@@ -72,9 +72,9 @@ public class App {
 			String outputSHP = PATH + "myresultSHP\\" + FILE + "_" + type + ".shp";
 			String inputSHP = PATH + "myshpdata\\" + FILE + ".shp";
 			APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index);
-			VisualTools.show(inputSHP, outputSHP, roadCollection);
+//			VisualTools.show(inputSHP, outputSHP, roadCollection);
 		}
-
+		calcAcc(FILE);
 //		APPTools.doMatch(inputSHP, outputTXT, outputSHP, m, index);
 //		这里优化不？
 //		VisualTools.show(inputSHP, outputSHP, roadCollection);
@@ -91,5 +91,20 @@ public class App {
 		String inputSHP = PATH + "myshpdata\\" + file1 + ".shp";
 //		String inputSHP2 = PATH + "myshpdata\\" + file2 + ".shp";
 		VisualTools.show(inputSHP, roadCollection);
+	}
+
+	static void calcAcc(String FILE) {
+		// D:\study\研究生\毕业论文\data\data_来自es\myresult
+		String path = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresultTXT\\";
+		List<String> types = new ArrayList<String>();
+//		types.add("TRUTH");
+		types.add("FWMM");
+		types.add("WMM");
+		types.add("HMM");
+//		files.add("simple");
+//		types.add("WMM0");
+//		DiffTools.makeDiff(path + trace, types);
+		DiffTools.calcAccuracy(path + FILE, types);
+
 	}
 }

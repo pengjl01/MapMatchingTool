@@ -93,6 +93,33 @@ public class DiffTools {
 	}
 
 	public static void calcAccuracy(String input, List<String> types) {
+		try {
+			BufferedReader[] brs = buildBufferedReaders(input, types);
+			BufferedReader brt = new BufferedReader(
+					new InputStreamReader(new BufferedInputStream(new FileInputStream(truthFileName(input))), "UTF-8"));
+			String[] lines = readLines(types.size(), brs);
+			String truth = brt.readLine();
+			int[] diff = new int[types.size()];
+			int n;
+			for (n = 0; lines != null; ++n) {
+				for (int i = 0; i < types.size(); ++i) {
+					if (!truth.equals(lines[i])) {
+						++diff[i];
+					}
+				}
+				lines = readLines(types.size(), brs);
+				truth = brt.readLine();
+			}
+			for (int i = 0; i < types.size(); ++i) {
+				System.out.println(types.get(i) + " different: " + diff[i] + " acc: " + ((float) (n - diff[i])) / n);
+			}
+			for (BufferedReader br : brs) {
+				br.close();
+			}
+			brt.close();
+		} catch (IOException e) {
+			// TODO: handle exception
+		}
 	}
 
 	static int breakCheck(String[] lines) {

@@ -33,9 +33,9 @@ public class WMM extends HMM {
 	}
 
 	protected static double MAX_RADIUS = 50;
-	public static Double n1 = 1.0;
-	public static Double n2 = 1.0;
-	public static Double n3 = 1.0;
+	public static Double n1 = 1.9;
+	public static Double n2 = 0.9;
+	public static Double n3 = 1.7;
 
 	@Override
 	protected Map<String, Object> getParamsMap(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
