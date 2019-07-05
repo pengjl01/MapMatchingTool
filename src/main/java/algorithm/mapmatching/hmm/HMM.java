@@ -28,13 +28,13 @@ import utils.GaussianDistribution;
  * 标准hmm
  */
 public class HMM extends MatcherIMPL {
-	protected int maxInterval = 180000;// 3min
+	protected static int maxInterval = 180000;// 3min
 	protected GaussianDistribution gd;
 
-	protected double BETA = 5;
-	protected double MAX_RADIUS = 200;
-	protected double RADIUS = 50;
-	protected double LowProbabilityRoutes = 2000;
+	protected static double BETA = 5;
+	protected static double MAX_RADIUS = 200;
+	protected static double RADIUS = 20;
+	protected static double LowProbabilityRoutes = 2000;
 	/*
 	 * 当前节点之前有多少个奇异点
 	 */
@@ -193,7 +193,7 @@ public class HMM extends MatcherIMPL {
 		paramsMap.put("ep", ep);
 		if (ep > 0) {
 			if (debug) {
-				System.out.println(" distance=" + distance + " ep=" + gd.probabilityDensity(distance));
+				System.out.println(" distance=" + distance + " ep=" + ep);
 			}
 			TPData tpData = getBestTP(lineFeature, graph, pCoordinate, closestCoordinate);
 			paramsMap.put("tpData", tpData);
@@ -203,7 +203,8 @@ public class HMM extends MatcherIMPL {
 		return paramsMap;
 	}
 
-	TPData getBestTP(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate, Coordinate closestCoordinate) {
+	protected TPData getBestTP(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
+			Coordinate closestCoordinate) {
 		if (preState.size() == 0) {
 			return new TPData(1, null);
 		}
@@ -237,7 +238,7 @@ public class HMM extends MatcherIMPL {
 	/*
 	 * tp的计算
 	 */
-	double getTransitionProbility(Graph graph, Coordinate closestCoordinate, HMMNode h) {
+	protected double getTransitionProbility(Graph graph, Coordinate closestCoordinate, HMMNode h) {
 		if (closestCoordinate.equals(h.matchedCoor))
 			return getTransitionProbility(0, 0) * h.prob;
 		if (h.nearestNode != null) {
@@ -256,7 +257,7 @@ public class HMM extends MatcherIMPL {
 	/*
 	 * 求转移概率tp基础版
 	 */
-	double getTransitionProbility(double roadDistance, double distance) {
+	protected double getTransitionProbility(double roadDistance, double distance) {
 		if (debug) {
 			System.out.println("  roadDistance:" + roadDistance + " distance:" + distance);
 		}
@@ -267,13 +268,30 @@ public class HMM extends MatcherIMPL {
 	/*
 	 * 求某道路的可能概率 假设数据是服从高斯分布
 	 */
-	double getEmissionProbility(double distance) {
+	protected double getEmissionProbility(double distance) {
 		if (distance < MAX_RADIUS) {
 			return gd.probabilityDensity(distance);
 		} else {
 			return 0.0;
 		}
 	}
+//	protected double getEmissionProbility(double distance) {
+//		if (distance < MAX_RADIUS) {
+//			return Math.pow(1.0 - (distance / MAX_RADIUS), 2);
+//		} else {
+//			return 0.0;
+//		}
+//	}
+//	protected double getEmissionProbility(double distance) {
+//		if (distance < MAX_RADIUS) {
+//			double p1 = -0.5 * Math.pow((distance - Constants.MU) / Constants.SIGMA, 2);
+//			return num * Math.pow(Math.E, p1);
+//		} else {
+//			return 0.0;
+//		}
+//	}
+//
+//	double num = 1 / (Math.sqrt(2 * Math.PI) * Constants.SIGMA);
 
 	/*
 	 * 从列表中找到概率最大的hmmnode

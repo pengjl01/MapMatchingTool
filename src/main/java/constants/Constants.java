@@ -9,6 +9,7 @@ public class Constants {
 //最大搜索半径
 	public final static double MAX_SEARCH_DISTANCE = 200;
 //	public final static double MAX_SEARCH_DISTANCE = 5E-4;
+	public static final double NOT_MOVED_DISTANCE = 10;
 //二维正态分布参数
 	public final static double MU1 = 0;
 	public final static double MU2 = 0;
@@ -17,7 +18,7 @@ public class Constants {
 	public final static double RHO = 0;
 //一维正态分布参数
 	public static final double MU = 0;
-	public static final double SIGMA = 10;
+	public static final double SIGMA = 4.07;
 //	不同地图适配参数
 //	osm
 	public static final String ROAD_ID = "osm_id";

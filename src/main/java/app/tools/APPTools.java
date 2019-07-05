@@ -71,7 +71,7 @@ public class APPTools {
 		long start = System.currentTimeMillis();
 		SimpleFeatureCollection pointMatched = matcher.match(pointOrigin);
 		System.out.println("轨迹共" + pointMatched.size() + "个点");
-		System.out.println("匹配耗时" + (System.currentTimeMillis() - start) / 1000 + "s");
+		System.out.println("匹配耗时" + (System.currentTimeMillis() - start) + "ms");
 		saveResultTXT(pointMatched, outputTXT);
 		saveResultSHP(pointMatched, outputSHP);
 	}

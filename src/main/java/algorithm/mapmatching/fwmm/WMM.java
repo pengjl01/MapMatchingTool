@@ -8,7 +8,10 @@ import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.linearref.LocationIndexedLine;
 
 import algorithm.mapmatching.hmm.HMM;
+import algorithm.mapmatching.hmm.HMMNode;
 import algorithm.mapmatching.hmm.TPData;
+import algorithm.pathfinder.astar.Astar;
+import constants.Constants;
 import data.simplefeature.pointfeature.PointFeature;
 import data.simplefeature.roadsegment.RoadSegment;
 import entity.graph.Graph;
@@ -29,9 +32,10 @@ public class WMM extends HMM {
 		super(index, debug);
 	}
 
+	protected static double MAX_RADIUS = 50;
 	public static Double n1 = 1.0;
 	public static Double n2 = 1.0;
-	public static Double n3 = 2.0;
+	public static Double n3 = 1.0;
 
 	@Override
 	protected Map<String, Object> getParamsMap(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
@@ -43,6 +47,65 @@ public class WMM extends HMM {
 		return paramsMap;
 	}
 
+	@Override
+	protected TPData getBestTP(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
+			Coordinate closestCoordinate) {
+		TPData ans = new TPData();
+		if (preState.size() == 0) {
+			ans.tp = 1.0;
+		} else {
+			// 候选匹配点最近的两个节点
+			Coordinate[] nowNodes = lineFeature.getClosestNodes(closestCoordinate);
+			if (nowNodes != null) {
+//			把当前点添加到图
+				if (!graph.cutAndAdd(nowNodes[0], nowNodes[1], closestCoordinate)) {
+					return ans;
+				}
+			}
+			for (HMMNode h : preState) {
+				if (h.matchedCoor.distance(closestCoordinate) <= Constants.NOT_MOVED_DISTANCE) {
+					ans.tp = getTransitionProbility(0, 0) * h.prob;
+					ans.parentNode = h;
+					break;
+				}
+				double temptp = getTransitionProbility(graph, closestCoordinate, h);
+				if (debug) {
+					String preosmid = h.road.getID();
+					System.out.println("    road id:" + preosmid + " tp:" + temptp);
+				}
+				if (temptp > ans.tp) {
+					ans.tp = temptp;
+					ans.parentNode = h;
+				}
+			}
+			if (nowNodes != null) {
+				graph.repareCut(nowNodes[0], nowNodes[1], closestCoordinate);
+			}
+		}
+
+		return ans;
+	}
+
+	/*
+	 * tp的计算
+	 */
+	@Override
+	protected double getTransitionProbility(Graph graph, Coordinate closestCoordinate, HMMNode h) {
+		if (closestCoordinate.equals(h.matchedCoor))
+			return getTransitionProbility(0, 0) * h.prob;
+		if (h.nearestNode != null) {
+			if (!graph.cutAndAdd(h.nearestNode[0], h.nearestNode[1], h.matchedCoor)) {
+				return 0.0;
+			}
+		}
+		Astar astar = new Astar(graph, h.matchedCoor, closestCoordinate);
+		if (h.nearestNode != null) {
+			graph.repareCut(h.nearestNode[0], h.nearestNode[1], h.matchedCoor);
+		}
+		return getTransitionProbility(Math.abs(astar.routeDistance()),
+				manhattanDistance(h.prepCoordinate, closestCoordinate));
+	}
+
 //	由参数map计算最终权值
 	@Override
 	protected double calcProb(Map<String, Object> paramsMap) {
@@ -52,6 +115,24 @@ public class WMM extends HMM {
 		Double prob = Math.pow(ep, n1) * Math.pow(tpData.tp, n2) * Math.pow(dp, n3);
 		return prob;
 	}
+
+	@Override
+	protected double getEmissionProbility(double distance) {
+		if (distance < MAX_RADIUS) {
+			return gd.xMoreThanProb(distance);
+		} else {
+			return 0.0;
+		}
+	}
+//	@Override
+//	protected double getEmissionProbility(double distance) {
+//		if (distance < MAX_RADIUS) {
+//			double num = 1.0 - (distance / MAX_RADIUS);
+//			return Math.pow(num, 2);
+//		} else {
+//			return 0.0;
+//		}
+//	}
 
 	Double calcDirectionProb(LocationIndexedLine line, Coordinate closestCoordinate, RoadSegment lineFeature,
 			PointFeature pointFeature) {
@@ -92,5 +173,9 @@ public class WMM extends HMM {
 			}
 		}
 		return ans;
+	}
+
+	double manhattanDistance(Coordinate a, Coordinate b) {
+		return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 	}
 }
