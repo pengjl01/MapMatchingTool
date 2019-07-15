@@ -31,7 +31,8 @@ public class PSONode {
 
 	@Override
 	public String toString() {
-		return "n1:" + n[1] + ";n2:" + n[2] + ";n3:" + n[3] + ";acc:" + acc;
+		return "n1:" + n[0] + ";n2:" + n[1] + ";n3:" + n[2] + ";acc:" + acc + ";pBestn1:" + pBestN[0] + ";pBestn2:"
+				+ pBestN[1] + ";pBestn3:" + pBestN[2] + ";pBestAcc" + pBestAcc;
 	}
 
 	/*

@@ -15,7 +15,7 @@ import app.tools.DiffTools;
  * 粒子群优化算法-专为WMM开发
  * 可复用性很差
  */
-public class PSOWMM {
+public class PSO {
 	/*
 	 * 输入区
 	 */
@@ -26,27 +26,43 @@ public class PSOWMM {
 	double[] gBestN;
 	PSONode[] populationData;
 	int step = 0;
+	boolean debug = false;
 
-	protected PSOWMM() {
+	protected PSO() {
 
 	}
 
-	public PSOWMM(WMM m, SimpleFeatureCollection pointOrigin) {
+	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth) {
 		this.m = m;
 		this.pointOrigin = pointOrigin;
+		this.truth = truth;
+		gBestN = new double[3];
+		initPopulation();
+	}
+
+	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth, boolean debug) {
+		this.debug = debug;
+		this.m = m;
+		this.pointOrigin = pointOrigin;
+		this.truth = truth;
 		gBestN = new double[3];
 		initPopulation();
 	}
 
 	public void start() {
 		while (!shouldStop()) {
+			if (debug) {
+				System.out.println("step:" + step);
+			}
 			updateParams();
 			updateAcc();
 			findGroupBest();
 			step += 1;
+			if (debug) {
+				System.out.println(this);
+				System.out.println("***************************************");
+			}
 		}
-		System.out.println("Best:" + gBestN[0] + ";" + gBestN[1] + ";" + gBestN[2] + ";");
-		System.out.println("acc:" + gBestAcc);
 	}
 
 	boolean shouldStop() {
@@ -71,6 +87,9 @@ public class PSOWMM {
 	void updateAcc() {
 		for (int i = 0; i < PSOConstants.popSize; ++i) {
 			updateAcc(populationData[i]);
+			if (debug) {
+				System.out.println(i + "th:" + populationData[i]);
+			}
 		}
 	}
 
@@ -123,5 +142,10 @@ public class PSOWMM {
 	private double getOmega() {
 		return (PSOConstants.omegaini - PSOConstants.omegaend) * (PSOConstants.maxgen - step) / PSOConstants.maxgen
 				+ PSOConstants.omegaend;
+	}
+
+	@Override
+	public String toString() {
+		return "Best:" + gBestN[0] + ";" + gBestN[1] + ";" + gBestN[2] + ";acc:" + gBestAcc;
 	}
 }

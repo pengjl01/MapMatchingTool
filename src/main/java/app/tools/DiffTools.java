@@ -184,7 +184,8 @@ public class DiffTools {
 
 	public static AccData calcAcc(List<String> truth, List<String> file, String info) {
 		if (truth == null || file == null || truth.size() != file.size()) {
-			System.out.println("two Lists have different size");
+			System.out
+					.println("DiffTools: two Lists have different size. truth:" + truth.size() + ";ans:" + file.size());
 		}
 		int diff = 0;
 		for (int i = 0; i < truth.size(); ++i) {
@@ -208,7 +209,7 @@ public class DiffTools {
 		return 2;
 	}
 
-	static String truthFileName(String path, String trace) {
+	static public String truthFileName(String path, String trace) {
 		return path + "truth\\" + trace + "_TRUTH.txt";
 	}
 
