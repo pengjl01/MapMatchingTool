@@ -33,9 +33,9 @@ public class WMM extends HMM {
 	}
 
 	protected static double MAX_RADIUS = 50;
-	public static Double n1 = 1.9;
-	public static Double n2 = 0.9;
-	public static Double n3 = 1.7;
+	public static Double n1 = 2.0;
+	public static Double n2 = 1.3;
+	public static Double n3 = 0.8;
 
 	@Override
 	protected Map<String, Object> getParamsMap(RoadSegment lineFeature, Graph graph, Coordinate pCoordinate,
@@ -104,6 +104,18 @@ public class WMM extends HMM {
 		}
 		return getTransitionProbility(Math.abs(astar.routeDistance()),
 				manhattanDistance(h.prepCoordinate, closestCoordinate));
+	}
+
+	/*
+	 * 求转移概率tp基础版
+	 */
+	@Override
+	protected double getTransitionProbility(double roadDistance, double distance) {
+		if (debug) {
+			System.out.println("  roadDistance:" + roadDistance + " distance:" + distance);
+		}
+		double dt = Math.abs(Math.abs(distance) - Math.abs(roadDistance));
+		return dt > LowProbabilityRoutes ? 0 : (Math.pow(Math.E, -(dt / BETA)));
 	}
 
 //	由参数map计算最终权值

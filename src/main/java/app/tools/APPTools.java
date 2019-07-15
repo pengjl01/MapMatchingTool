@@ -8,7 +8,9 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geotools.data.shapefile.ShapefileDataStore;
@@ -71,25 +73,34 @@ public class APPTools {
 		long start = System.currentTimeMillis();
 		SimpleFeatureCollection pointMatched = matcher.match(pointOrigin);
 		System.out.println("轨迹共" + pointMatched.size() + "个点");
-		System.out.println("匹配耗时" + (System.currentTimeMillis() - start) + "ms");
+		System.out.println(matcher.getClass().getSimpleName() + "匹配耗时" + (System.currentTimeMillis() - start) + "ms");
 		saveResultTXT(pointMatched, outputTXT);
 		saveResultSHP(pointMatched, outputSHP);
 	}
 
+	/*
+	 * 保存结果到文件
+	 */
 	public static void saveResultTXT(SimpleFeatureCollection pointMatched, String txtResult) {
-		SimpleFeatureIterator i = pointMatched.features();
+		List<String> ansList = getMatchingAnswer(pointMatched);
+		saveResultTXT(ansList, txtResult);
+	}
+
+	/*
+	 * 保存结果到文件
+	 */
+	public static void saveResultTXT(List<String> ansList, String txtResult) {
 		BufferedWriter bw = null;
 		try {
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(txtResult), "UTF-8"));
-			while (i.hasNext()) {
-				bw.write((String) i.next().getProperty("road_id").getValue());
+			for (String s : ansList) {
+				bw.write(s);
 				bw.newLine();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			i.close();
 			if (bw != null) {
 				try {
 					bw.close();
@@ -99,6 +110,23 @@ public class APPTools {
 				}
 			}
 		}
+
+	}
+
+	/*
+	 * 从SimpleFeatureCollection提取匹配结果（道路ID）
+	 */
+	public static List<String> getMatchingAnswer(SimpleFeatureCollection pointMatched) {
+		List<String> ans = new ArrayList<String>();
+		SimpleFeatureIterator i = pointMatched.features();
+		try {
+			while (i.hasNext()) {
+				ans.add((String) i.next().getProperty("road_id").getValue());
+			}
+		} finally {
+			i.close();
+		}
+		return ans;
 	}
 
 	public static void saveResultSHP(SimpleFeatureCollection pointMatched, String SHPResult) {

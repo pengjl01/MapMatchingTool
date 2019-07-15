@@ -28,9 +28,12 @@ public class App {
 	static boolean trans = true;
 
 	public static void main(String[] args) throws Exception {
-		func2();
+		func1();
 	}
 
+	/*
+	 * 一次匹配一种并展示
+	 */
 	static void func1() {
 		// display a data store file chooser dialog for shapefiles
 //      File file = JFileDataStoreChooser.showOpenFile("shp", null);
@@ -55,7 +58,11 @@ public class App {
 
 	}
 
+	/*
+	 * 一次匹配多种并计算精确度
+	 */
 	static void func2() {
+		System.out.println("n1:" + WMM.n1 + ";n2:" + WMM.n2 + ";n3:" + WMM.n3);
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(ROADFILE), trans);
 		SpatialIndex index = APPTools.buildSTRTree(roadCollection);
 		// display a data store file chooser dialog for shapefiles
@@ -65,7 +72,7 @@ public class App {
 		matchers.add(new WMM(index));
 //		matchers.add(new HMM(index));
 //		matchers.add(new SimpleDistance(index));
-		String FILE = "13321174881_00006";
+		String FILE = "13321174830_00004";
 		for (Matcher m : matchers) {
 			String type = m.getClass().getSimpleName();
 			String outputTXT = PATH + "myresultTXT\\" + FILE + "_" + type + ".txt";
@@ -81,16 +88,54 @@ public class App {
 //			matchDiff有问题，目前不可用
 //			SimpleFeatureCollection pointDiff = Matcher.matchDiff(pointOrigin, pointMatched);
 //			Tools.addLines(map, pointDiff, Color.green);
-
+		System.out.println("-----------------------------------------------");
 	}
 
+	static void func2_test() {
+		WMM.n1 = 1.9;
+		WMM.n2 = 1.3;
+		WMM.n3 = 0.7;
+		func2();
+		WMM.n1 = 2.0;
+		WMM.n2 = 1.4;
+		WMM.n3 = 0.7;
+		func2();
+		WMM.n1 = 2.0;
+		WMM.n2 = 1.2;
+		WMM.n3 = 0.7;
+		func2();
+		WMM.n1 = 2.0;
+		WMM.n2 = 1.3;
+		WMM.n3 = 0.8;
+		func2();
+		WMM.n1 = 2.0;
+		WMM.n2 = 1.3;
+		WMM.n3 = 0.6;
+		func2();
+	}
+
+	/*
+	 * 仅展示，单线
+	 */
 	static void func3() {
-		String file1 = "13321174881_00006";
+		String file1 = "13321174830_00003";
 //		String file2 = "13321164368_00044";
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(ROADFILE), trans);
 		String inputSHP = PATH + "myshpdata\\" + file1 + ".shp";
 //		String inputSHP2 = PATH + "myshpdata\\" + file2 + ".shp";
 		VisualTools.show(inputSHP, roadCollection);
+	}
+
+	/*
+	 * 仅展示，对照原始数据
+	 */
+	static void func4() {
+		String file1 = "13321174881_00003";
+		String type = "WMM";
+		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(ROADFILE), trans);
+		String inputSHP = PATH + "myshpdata\\" + file1 + ".shp";
+		String outputSHP = PATH + "myresultSHP\\" + file1 + "_" + type + ".shp";
+		VisualTools.show(inputSHP, outputSHP, roadCollection);
 	}
 
 	static void calcAcc(String FILE) {
@@ -101,10 +146,9 @@ public class App {
 		types.add("FWMM");
 		types.add("WMM");
 		types.add("HMM");
-//		files.add("simple");
-//		types.add("WMM0");
+		types.add("SimpleDistance");
 //		DiffTools.makeDiff(path + trace, types);
-		DiffTools.calcAccuracy(path + FILE, types);
+		DiffTools.calcAccuracy(path, FILE, types);
 
 	}
 }
