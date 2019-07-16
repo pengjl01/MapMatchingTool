@@ -1,5 +1,9 @@
 package algorithm.pso;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -8,6 +12,7 @@ import algorithm.mapmatching.fwmm.WMM;
 import app.tools.APPTools;
 import app.tools.AccData;
 import app.tools.DiffTools;
+import constants.Constants;
 
 /*
  * @author pjl
@@ -27,17 +32,20 @@ public class PSO {
 	PSONode[] populationData;
 	int step = 0;
 	boolean debug = false;
+	BufferedWriter bw;
 
 	protected PSO() {
 
 	}
 
-	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth) {
+	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth) throws IOException {
 		this.m = m;
 		this.pointOrigin = pointOrigin;
 		this.truth = truth;
 		gBestN = new double[3];
 		initPopulation();
+		bw = new BufferedWriter(
+				new OutputStreamWriter(new FileOutputStream(Constants.RESULTPATH + "PSOResult.txt"), "UTF-8"));
 	}
 
 	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth, boolean debug) {
@@ -49,8 +57,10 @@ public class PSO {
 		initPopulation();
 	}
 
-	public void start() {
+	public void start() throws IOException {
 		while (!shouldStop()) {
+			bw.write("step:" + step);
+			bw.newLine();
 			if (debug) {
 				System.out.println("step:" + step);
 			}
@@ -58,11 +68,16 @@ public class PSO {
 			updateAcc();
 			findGroupBest();
 			step += 1;
+			bw.write(this.toString());
+			bw.newLine();
+			System.out.println("***************************************");
+			bw.newLine();
 			if (debug) {
 				System.out.println(this);
 				System.out.println("***************************************");
 			}
 		}
+		bw.close();
 	}
 
 	boolean shouldStop() {
@@ -84,9 +99,11 @@ public class PSO {
 	/*
 	 * 计算所有粒子的精确度并更新
 	 */
-	void updateAcc() {
+	void updateAcc() throws IOException {
 		for (int i = 0; i < PSOConstants.popSize; ++i) {
 			updateAcc(populationData[i]);
+			bw.write(i + "th:" + populationData[i]);
+			bw.newLine();
 			if (debug) {
 				System.out.println(i + "th:" + populationData[i]);
 			}

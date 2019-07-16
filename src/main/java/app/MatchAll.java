@@ -13,6 +13,7 @@ import algorithm.mapmatching.fwmm.WMM;
 import algorithm.mapmatching.hmm.HMM;
 import algorithm.mapmatching.simpledistance.SimpleDistance;
 import app.tools.APPTools;
+import constants.Constants;
 import data.datareader.SHPReader;
 
 /**
@@ -20,16 +21,18 @@ import data.datareader.SHPReader;
  *
  */
 public class MatchAll {
-//	D:\study\研究生\毕业论文\data\map\myosm
-	static String ROADFILE = "C:\\study\\myosm\\bj_small.shp";
-//	static String ROADFILE = "D:\\study\\研究生\\毕业论文\\data\\map\\bj2011\\myshp\\road_network.shp";
-//	D:\study\研究生\毕业论文\data\data_来自es\myshpdata
-	static String PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\";
 	static boolean trans = true;
 //	static String FILE = "13321164368_00036";
 
 	public static void main(String[] args) throws Exception {
-		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(ROADFILE), trans);
+		func1();
+	}
+
+	/*
+	 * 一次使用多种算法，匹配全部数据获得结果
+	 */
+	static void func1() {
+		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
 		SpatialIndex index = APPTools.buildSTRTree(roadCollection);
 		// display a data store file chooser dialog for shapefiles
 //      File file = JFileDataStoreChooser.showOpenFile("shp", null);
@@ -38,15 +41,15 @@ public class MatchAll {
 		matchers.add(new WMM(index));
 		matchers.add(new HMM(index));
 		matchers.add(new SimpleDistance(index));
-		File[] inputFiles = new File(PATH + "myshpdata\\").listFiles();
+		File[] inputFiles = new File(Constants.INPUTPATH + "myshpdata\\").listFiles();
 		for (File file : inputFiles) {
 			if (file.isFile() && file.getName().endsWith(".shp")) {
 				String name = file.getName().replaceAll("[.][^.]+$", "");
 				System.out.println(file + " start");
 				for (Matcher m : matchers) {
 					String type = m.getClass().getSimpleName();
-					String outputTXT = PATH + "myresultTXT\\" + name + "_" + type + ".txt";
-					String outputSHP = PATH + "myresultSHP\\" + name + "_" + type + ".shp";
+					String outputTXT = Constants.INPUTPATH + "myresultTXT\\" + name + "_" + type + ".txt";
+					String outputSHP = Constants.INPUTPATH + "myresultSHP\\" + name + "_" + type + ".shp";
 					APPTools.doMatch(file, outputTXT, outputSHP, m, index);
 				}
 			}

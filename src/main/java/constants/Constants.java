@@ -6,6 +6,11 @@ package constants;
  * 类说明
  */
 public class Constants {
+	// 路径设置
+	// D:\study\研究生\毕业论文\data\map\myosm
+	public final static String ROADFILE = "C:\\study\\myosm\\bj_small.shp";
+	public final static String INPUTPATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\";
+	public final static String RESULTPATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\myresultTXT\\";
 //最大搜索半径
 	public final static double MAX_SEARCH_DISTANCE = 200;
 //	public final static double MAX_SEARCH_DISTANCE = 5E-4;

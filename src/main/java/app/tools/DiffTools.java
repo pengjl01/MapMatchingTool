@@ -209,15 +209,15 @@ public class DiffTools {
 		return 2;
 	}
 
-	static public String truthFileName(String path, String trace) {
+	public static String truthFileName(String path, String trace) {
 		return path + "truth\\" + trace + "_TRUTH.txt";
 	}
 
-	static String inputFileName(String path, String trace, String type) {
+	public static String inputFileName(String path, String trace, String type) {
 		return path + trace + "_" + type + ".txt";
 	}
 
-	static String outputFileName(String path, String trace, String type) {
+	public static String outputFileName(String path, String trace, String type) {
 		return path + trace + "_" + "diff_" + type + ".txt";
 	}
 }

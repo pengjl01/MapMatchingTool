@@ -1,9 +1,12 @@
 package app;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.tools.AccData;
 import app.tools.DiffTools;
+import constants.Constants;
 
 /*
  * @author pjl
@@ -12,12 +15,10 @@ import app.tools.DiffTools;
  */
 public class FindDifferents {
 	public static void main(String[] args) {
-		func1();
+		func2();
 	}
 
 	public static void func1() {
-		// D:\study\研究生\毕业论文\data\data_来自es\myresult
-		String path = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\myresultTXT\\";
 		String trace = "13321174881_00003";
 		List<String> types = new ArrayList<String>();
 //		types.add("TRUTH");
@@ -26,8 +27,32 @@ public class FindDifferents {
 		types.add("HMM");
 		types.add("SimpleDistance");
 //		DiffTools.makeDiff(path + trace, types);
-		DiffTools.calcAccuracy(path, trace, types);
+		DiffTools.calcAccuracy(Constants.RESULTPATH, trace, types);
 
 	}
 
+	/*
+	 * 计算某算法的综合正确率
+	 */
+	public static void func2() {
+		String type = "FWMM";
+		File[] inputFiles = new File(Constants.RESULTPATH).listFiles();
+		AccData ans = new AccData();
+		for (File file : inputFiles) {
+			if (file.isFile() && file.getName().endsWith(".txt")) {
+				String name = file.getName().replaceAll("[.][^.]+$", "");
+				if (name.endsWith(type)) {
+					name = name.substring(0, 17);
+					String truthFileName = DiffTools.truthFileName(Constants.RESULTPATH, name);
+					List<String> truth = DiffTools.file2List(truthFileName);
+					String ansFileName = DiffTools.inputFileName(Constants.RESULTPATH, name, type);
+					List<String> data = DiffTools.file2List(ansFileName);
+					AccData t = DiffTools.calcAcc(truth, data, type);
+					ans.plus(t);
+				}
+
+			}
+		}
+		System.out.println(type + ":" + ans);
+	}
 }
