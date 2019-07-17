@@ -12,6 +12,7 @@ import algorithm.mapmatching.fwmm.FWMM;
 import algorithm.mapmatching.fwmm.WMM;
 import algorithm.mapmatching.hmm.HMM;
 import algorithm.mapmatching.simpledistance.SimpleDistance;
+import algorithm.mapmatching.stmm.STMM;
 import app.tools.APPTools;
 import constants.Constants;
 import data.datareader.SHPReader;
@@ -37,10 +38,11 @@ public class MatchAll {
 		// display a data store file chooser dialog for shapefiles
 //      File file = JFileDataStoreChooser.showOpenFile("shp", null);
 		List<Matcher> matchers = new ArrayList<Matcher>();
-		matchers.add(new FWMM(index));
-		matchers.add(new WMM(index));
-		matchers.add(new HMM(index));
 		matchers.add(new SimpleDistance(index));
+		matchers.add(new STMM(index));
+		matchers.add(new HMM(index));
+		matchers.add(new WMM(index));
+		matchers.add(new FWMM(index));
 		File[] inputFiles = new File(Constants.INPUTPATH + "myshpdata\\").listFiles();
 		for (File file : inputFiles) {
 			if (file.isFile() && file.getName().endsWith(".shp")) {

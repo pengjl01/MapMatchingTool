@@ -10,6 +10,9 @@ import org.locationtech.jts.index.SpatialIndex;
 import algorithm.mapmatching.Matcher;
 import algorithm.mapmatching.fwmm.FWMM;
 import algorithm.mapmatching.fwmm.WMM;
+import algorithm.mapmatching.hmm.HMM;
+import algorithm.mapmatching.simpledistance.SimpleDistance;
+import algorithm.mapmatching.stmm.STMM;
 import app.tools.APPTools;
 import app.tools.DiffTools;
 import app.tools.VisualTools;
@@ -24,7 +27,7 @@ public class App {
 	static boolean trans = true;
 
 	public static void main(String[] args) throws Exception {
-		func4();
+		func2();
 	}
 
 	/*
@@ -40,14 +43,17 @@ public class App {
 //		Matcher m = new HMM(index, debug);
 //		Matcher m = new WMM(index, debug);
 		Matcher m = new FWMM(index, debug);
+//		Matcher m = new STMM(index, debug);
 		String type = m.getClass().getSimpleName();
 		String FILE = "13321174881_00006";
 		String outputTXT = Constants.INPUTPATH + "myresultTXT\\" + FILE + "_" + type + ".txt";
 		String outputSHP = Constants.INPUTPATH + "myresultSHP\\" + FILE + "_" + type + ".shp";
 		String inputSHP = Constants.INPUTPATH + "myshpdata\\" + FILE + ".shp";
 		APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index);
+		calcAcc(FILE);
 //		这里优化不？
 		VisualTools.show(inputSHP, outputSHP, roadCollection);
+
 //			matchDiff有问题，目前不可用
 //			SimpleFeatureCollection pointDiff = Matcher.matchDiff(pointOrigin, pointMatched);
 //			Tools.addLines(map, pointDiff, Color.green);
@@ -58,17 +64,17 @@ public class App {
 	 * 一次匹配多种并计算精确度
 	 */
 	static void func2() {
-		System.out.println("n1:" + WMM.n1 + ";n2:" + WMM.n2 + ";n3:" + WMM.n3);
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
 		SpatialIndex index = APPTools.buildSTRTree(roadCollection);
 		// display a data store file chooser dialog for shapefiles
 //      File file = JFileDataStoreChooser.showOpenFile("shp", null);
 		List<Matcher> matchers = new ArrayList<Matcher>();
-		matchers.add(new FWMM(index));
+		matchers.add(new SimpleDistance(index));
+		matchers.add(new STMM(index));
+		matchers.add(new HMM(index));
 		matchers.add(new WMM(index));
-//		matchers.add(new HMM(index));
-//		matchers.add(new SimpleDistance(index));
-		String FILE = "13321174830_00004";
+		matchers.add(new FWMM(index));
+		String FILE = "13321174881_00006";
 		for (Matcher m : matchers) {
 			String type = m.getClass().getSimpleName();
 			String outputTXT = Constants.INPUTPATH + "myresultTXT\\" + FILE + "_" + type + ".txt";
@@ -85,29 +91,6 @@ public class App {
 //			SimpleFeatureCollection pointDiff = Matcher.matchDiff(pointOrigin, pointMatched);
 //			Tools.addLines(map, pointDiff, Color.green);
 		System.out.println("-----------------------------------------------");
-	}
-
-	static void func2_test() {
-		WMM.n1 = 1.9;
-		WMM.n2 = 1.3;
-		WMM.n3 = 0.7;
-		func2();
-		WMM.n1 = 2.0;
-		WMM.n2 = 1.4;
-		WMM.n3 = 0.7;
-		func2();
-		WMM.n1 = 2.0;
-		WMM.n2 = 1.2;
-		WMM.n3 = 0.7;
-		func2();
-		WMM.n1 = 2.0;
-		WMM.n2 = 1.3;
-		WMM.n3 = 0.8;
-		func2();
-		WMM.n1 = 2.0;
-		WMM.n2 = 1.3;
-		WMM.n3 = 0.6;
-		func2();
 	}
 
 	/*
@@ -141,6 +124,7 @@ public class App {
 		types.add("WMM");
 		types.add("HMM");
 		types.add("SimpleDistance");
+		types.add("STMM");
 //		DiffTools.makeDiff(path + trace, types);
 		DiffTools.calcAccuracy(Constants.RESULTPATH, FILE, types);
 

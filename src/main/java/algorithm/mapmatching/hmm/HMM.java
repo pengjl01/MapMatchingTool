@@ -324,9 +324,7 @@ public class HMM extends MatcherIMPL {
 				// 向数组写入数据
 				for (int i = 0; i < matchingFeatureIndexs.size(); ++i) {
 					HMMNode h = stack.pop();
-					int loc = matchingFeatureIndexs.get(i);
-					matchedIds[loc] = h.road.getID();
-					matchedPoints[loc] = geometryFactory.createPoint(h.matchedCoor);
+					saveData(matchingFeatureIndexs.get(i), h.road.getID(), h.matchedCoor);
 				}
 			}
 

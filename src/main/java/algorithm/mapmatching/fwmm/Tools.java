@@ -62,6 +62,9 @@ public class Tools {
 //		return ans;
 //	}
 
+	/*
+	 * 道路line在c处的方向值
+	 */
 	public static List<Double> getRoadDirection(LocationIndexedLine line, Coordinate c, char oneway) {
 		List<Double> ans = new ArrayList<Double>();
 		LinearLocation here = line.project(c);

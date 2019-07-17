@@ -9,7 +9,6 @@ import org.locationtech.jts.linearref.LinearLocation;
 import org.locationtech.jts.linearref.LocationIndexedLine;
 
 import algorithm.mapmatching.MatcherIMPL;
-import constants.Constants;
 import data.simplefeature.pointfeature.PointFeature;
 import data.simplefeature.roadsegment.RoadSegment;
 
@@ -31,7 +30,7 @@ public class SimpleDistance extends MatcherIMPL {
 		Point p = temp.getPoint();
 		Coordinate GPSCoordinate = p.getCoordinate();
 		List<RoadSegment> lines = getPossibleRoads(GPSCoordinate);
-		double minDist = Constants.MAX_SEARCH_DISTANCE + 10000;
+		double minDist = Double.POSITIVE_INFINITY;
 		Coordinate minDistPoint = null;
 		for (RoadSegment road : lines) {
 			LocationIndexedLine line = new LocationIndexedLine(road.getGeom());
