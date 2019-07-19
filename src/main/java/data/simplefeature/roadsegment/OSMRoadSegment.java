@@ -46,4 +46,9 @@ public class OSMRoadSegment implements RoadSegment {
 			return ans;
 		}
 	}
+
+	@Override
+	public Double getSpeed() {
+		return Double.valueOf((Integer) road.getProperty("maxspeed").getValue());
+	}
 }

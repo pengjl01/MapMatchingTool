@@ -130,7 +130,7 @@ public class STMM extends MatcherIMPL {
 				 * dAlphaWeight计算
 				 */
 				if (preMatchedCoor.equals(thisCoor) || preMatchedCoor.equals(candidateCoor)) {
-					dAlphaWeight = 0;
+					dAlphaWeight = 1;
 				} else {
 					double dalpha1 = algorithm.mapmatching.fwmm.Tools.calcDirection(preMatchedCoor, thisCoor);
 					double dalpha2 = algorithm.mapmatching.fwmm.Tools.calcDirection(preMatchedCoor, candidateCoor);

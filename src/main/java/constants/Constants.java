@@ -9,8 +9,11 @@ public class Constants {
 	// 路径设置
 	// D:\study\研究生\毕业论文\data\map\myosm
 	public final static String ROADFILE = "C:\\study\\myosm\\bj_small.shp";
-	public final static String INPUTPATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\";
-	public final static String RESULTPATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\myresultTXT\\";
+	public final static String DATA_HOME_PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\";
+//	public final static String DATA_HOME_PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\";
+	public final static String SHP_INPUT_PATH = DATA_HOME_PATH + "myshpdata\\";
+	public final static String SHP_OUTPUT_PATH = DATA_HOME_PATH + "myshpdata\\";
+	public final static String TXT_RESULT_PATH = DATA_HOME_PATH + "myresultTXT\\";
 //最大搜索半径
 	public final static double MAX_SEARCH_DISTANCE = 200;
 //	public final static double MAX_SEARCH_DISTANCE = 5E-4;

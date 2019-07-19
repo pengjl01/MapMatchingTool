@@ -28,9 +28,9 @@ public class PSOAPP {
 		SpatialIndex index = APPTools.buildSTRTree(roadCollection);
 		WMM m = new WMM(index);
 //		Matcher m = new FWMM(index, debug);
-		String inputSHP = Constants.INPUTPATH + "myshpdata\\" + FILE + ".shp";
+		String inputSHP = Constants.SHP_INPUT_PATH + FILE + ".shp";
 		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(new File(inputSHP), trans);
-		List<String> truth = DiffTools.file2List(DiffTools.truthFileName(Constants.RESULTPATH, FILE));
+		List<String> truth = DiffTools.file2List(DiffTools.truthFileName(Constants.TXT_RESULT_PATH, FILE));
 		PSO pso = new PSO(m, pointOrigin, truth, true);
 		pso.start();
 	}

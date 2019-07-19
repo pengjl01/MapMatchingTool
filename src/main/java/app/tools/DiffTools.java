@@ -193,7 +193,7 @@ public class DiffTools {
 				++diff;
 			}
 		}
-		return new AccData(truth.size() + 1, diff, info);
+		return new AccData(truth.size(), diff, info);
 	}
 
 	static int breakCheck(String[] lines) {

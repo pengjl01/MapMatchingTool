@@ -12,6 +12,7 @@ import algorithm.mapmatching.fwmm.FWMM;
 import algorithm.mapmatching.fwmm.WMM;
 import algorithm.mapmatching.hmm.HMM;
 import algorithm.mapmatching.simpledistance.SimpleDistance;
+import algorithm.mapmatching.stdm.STDM;
 import algorithm.mapmatching.stmm.STMM;
 import app.tools.APPTools;
 import app.tools.DiffTools;
@@ -42,15 +43,16 @@ public class App {
 //		Matcher m = new SimpleDistance(index);
 //		Matcher m = new HMM(index, debug);
 //		Matcher m = new WMM(index, debug);
-		Matcher m = new FWMM(index, debug);
+//		Matcher m = new FWMM(index, debug);
 //		Matcher m = new STMM(index, debug);
+		Matcher m = new STDM(index, debug);
 		String type = m.getClass().getSimpleName();
 		String FILE = "13321174881_00006";
-		String outputTXT = Constants.INPUTPATH + "myresultTXT\\" + FILE + "_" + type + ".txt";
-		String outputSHP = Constants.INPUTPATH + "myresultSHP\\" + FILE + "_" + type + ".shp";
-		String inputSHP = Constants.INPUTPATH + "myshpdata\\" + FILE + ".shp";
-		APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index);
-		calcAcc(FILE);
+		String outputTXT = Constants.TXT_RESULT_PATH + FILE + "_" + type + ".txt";
+		String outputSHP = Constants.SHP_OUTPUT_PATH + FILE + "_" + type + ".shp";
+		String inputSHP = Constants.SHP_INPUT_PATH + FILE + ".shp";
+		APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index, null);
+		calcAcc(FILE, type);
 //		这里优化不？
 		VisualTools.show(inputSHP, outputSHP, roadCollection);
 
@@ -74,13 +76,14 @@ public class App {
 		matchers.add(new HMM(index));
 		matchers.add(new WMM(index));
 		matchers.add(new FWMM(index));
+		matchers.add(new STDM(index));
 		String FILE = "13321174881_00006";
 		for (Matcher m : matchers) {
 			String type = m.getClass().getSimpleName();
-			String outputTXT = Constants.INPUTPATH + "myresultTXT\\" + FILE + "_" + type + ".txt";
-			String outputSHP = Constants.INPUTPATH + "myresultSHP\\" + FILE + "_" + type + ".shp";
-			String inputSHP = Constants.INPUTPATH + "myshpdata\\" + FILE + ".shp";
-			APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index);
+			String outputTXT = Constants.TXT_RESULT_PATH + FILE + "_" + type + ".txt";
+			String outputSHP = Constants.SHP_OUTPUT_PATH + FILE + "_" + type + ".shp";
+			String inputSHP = Constants.SHP_INPUT_PATH + FILE + ".shp";
+			APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index, null);
 //			VisualTools.show(inputSHP, outputSHP, roadCollection);
 		}
 		calcAcc(FILE);
@@ -100,7 +103,7 @@ public class App {
 		String file1 = "13321174830_00003";
 //		String file2 = "13321164368_00044";
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
-		String inputSHP = Constants.INPUTPATH + "myshpdata\\" + file1 + ".shp";
+		String inputSHP = Constants.SHP_INPUT_PATH + file1 + ".shp";
 //		String inputSHP2 = PATH + "myshpdata\\" + file2 + ".shp";
 		VisualTools.show(inputSHP, roadCollection);
 	}
@@ -112,21 +115,26 @@ public class App {
 		String file1 = "13331194450_00003";
 		String type = "WMM";
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
-		String inputSHP = Constants.INPUTPATH + "myshpdata\\" + file1 + ".shp";
-		String outputSHP = Constants.INPUTPATH + "myresultSHP\\" + file1 + "_" + type + ".shp";
+		String inputSHP = Constants.SHP_INPUT_PATH + file1 + ".shp";
+		String outputSHP = Constants.SHP_OUTPUT_PATH + file1 + "_" + type + ".shp";
 		VisualTools.show(inputSHP, outputSHP, roadCollection);
 	}
 
 	static void calcAcc(String FILE) {
 		List<String> types = new ArrayList<String>();
-//		types.add("TRUTH");
 		types.add("FWMM");
 		types.add("WMM");
 		types.add("HMM");
 		types.add("SimpleDistance");
 		types.add("STMM");
+		types.add("STDM");
 //		DiffTools.makeDiff(path + trace, types);
-		DiffTools.calcAccuracy(Constants.RESULTPATH, FILE, types);
+		DiffTools.calcAccuracy(Constants.TXT_RESULT_PATH, FILE, types);
+	}
 
+	static void calcAcc(String FILE, String type) {
+		List<String> types = new ArrayList<String>();
+		types.add(type);
+		DiffTools.calcAccuracy(Constants.TXT_RESULT_PATH, FILE, types);
 	}
 }

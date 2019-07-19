@@ -36,4 +36,11 @@ public interface PointFeature {
 	 * @return 返回Feature本身
 	 */
 	public SimpleFeature getFeature();
+
+	/*
+	 * 获取速度
+	 * 
+	 * @return 返回速度值
+	 */
+	public Double getSpeed();
 }

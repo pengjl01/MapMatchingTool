@@ -1,9 +1,6 @@
 package algorithm.pso;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -13,6 +10,7 @@ import app.tools.APPTools;
 import app.tools.AccData;
 import app.tools.DiffTools;
 import constants.Constants;
+import utils.output.OutputWriter;
 
 /*
  * @author pjl
@@ -32,7 +30,7 @@ public class PSO {
 	PSONode[] populationData;
 	int step = 0;
 	boolean debug = false;
-	BufferedWriter bw;
+	OutputWriter ow;
 
 	protected PSO() {
 
@@ -44,8 +42,7 @@ public class PSO {
 		this.truth = truth;
 		gBestN = new double[3];
 		initPopulation();
-		bw = new BufferedWriter(
-				new OutputStreamWriter(new FileOutputStream(Constants.RESULTPATH + "PSOResult.txt"), "UTF-8"));
+		ow = new OutputWriter(Constants.TXT_RESULT_PATH + "PSOResult.txt");
 	}
 
 	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth, boolean debug) {
@@ -59,8 +56,7 @@ public class PSO {
 
 	public void start() throws IOException {
 		while (!shouldStop()) {
-			bw.write("step:" + step);
-			bw.newLine();
+			ow.write("step:" + step);
 			if (debug) {
 				System.out.println("step:" + step);
 			}
@@ -68,16 +64,14 @@ public class PSO {
 			updateAcc();
 			findGroupBest();
 			step += 1;
-			bw.write(this.toString());
-			bw.newLine();
+			ow.write(this.toString());
 			System.out.println("***************************************");
-			bw.newLine();
 			if (debug) {
 				System.out.println(this);
 				System.out.println("***************************************");
 			}
 		}
-		bw.close();
+		ow.close();
 	}
 
 	boolean shouldStop() {
@@ -102,8 +96,7 @@ public class PSO {
 	void updateAcc() throws IOException {
 		for (int i = 0; i < PSOConstants.popSize; ++i) {
 			updateAcc(populationData[i]);
-			bw.write(i + "th:" + populationData[i]);
-			bw.newLine();
+			ow.write(i + "th:" + populationData[i]);
 			if (debug) {
 				System.out.println(i + "th:" + populationData[i]);
 			}

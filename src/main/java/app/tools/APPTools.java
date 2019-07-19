@@ -31,6 +31,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import algorithm.mapmatching.Matcher;
 import data.datareader.SHPReader;
+import utils.output.OutputWriter;
 
 /*
  * @author pjl
@@ -68,10 +69,20 @@ public class APPTools {
 		return index;
 	}
 
-	public static void doMatch(File inputSHP, String outputTXT, String outputSHP, Matcher matcher, SpatialIndex index) {
+	public static void doMatch(File inputSHP, String outputTXT, String outputSHP, Matcher matcher, SpatialIndex index,
+			OutputWriter ow) {
 		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(inputSHP, trans);
 		long start = System.currentTimeMillis();
 		SimpleFeatureCollection pointMatched = matcher.match(pointOrigin);
+		if (ow != null) {
+			try {
+				ow.write("轨迹共" + pointMatched.size() + "个点");
+				ow.write(matcher.getClass().getSimpleName() + "匹配耗时" + (System.currentTimeMillis() - start) + "ms");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		System.out.println("轨迹共" + pointMatched.size() + "个点");
 		System.out.println(matcher.getClass().getSimpleName() + "匹配耗时" + (System.currentTimeMillis() - start) + "ms");
 		saveResultTXT(pointMatched, outputTXT);

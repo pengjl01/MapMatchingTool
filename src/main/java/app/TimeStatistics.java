@@ -24,7 +24,7 @@ public class TimeStatistics {
 	public static void func1() {
 		int delta = 1;
 		int[] time = new int[(max / delta)];
-		File[] inputFiles = new File(Constants.INPUTPATH + "myshpdata\\").listFiles();
+		File[] inputFiles = new File(Constants.SHP_INPUT_PATH).listFiles();
 		for (File file : inputFiles) {
 			if (file.isFile() && file.getName().endsWith(".shp")) {
 				Long pretime = null;
@@ -76,7 +76,7 @@ public class TimeStatistics {
 	public static void func3() {
 		int delta = 5;
 		int[] time = new int[(max / delta)];
-		File[] inputFiles = new File(Constants.INPUTPATH + "myshpdata\\").listFiles();
+		File[] inputFiles = new File(Constants.SHP_INPUT_PATH).listFiles();
 		for (File file : inputFiles) {
 			if (file.isFile() && file.getName().endsWith(".shp")) {
 				Long pretime = null;

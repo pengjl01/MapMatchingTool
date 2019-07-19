@@ -56,7 +56,7 @@ public class AccData {
 
 	@Override
 	public String toString() {
-		return info + " total:" + total + ";err:" + err + ";acc:" + calcAcc();
+		return info + ": Total:" + total + ";Err:" + err + ";Acc:" + calcAcc();
 	}
 
 	/*

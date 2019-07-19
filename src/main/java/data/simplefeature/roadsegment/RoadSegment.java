@@ -37,4 +37,11 @@ public interface RoadSegment {
 	 * @return 输入道路上与输入点最近的两个顶点
 	 */
 	public Coordinate[] getClosestNodes(Coordinate c);
+
+	/*
+	 * 获取速度
+	 * 
+	 * @return 速度值
+	 */
+	public Double getSpeed();
 }

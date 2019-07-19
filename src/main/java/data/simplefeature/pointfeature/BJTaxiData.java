@@ -45,4 +45,9 @@ public class BJTaxiData implements PointFeature {
 		return pointFeature;
 	}
 
+	@Override
+	public Double getSpeed() {
+		return (Double) pointFeature.getProperty("speed").getValue();
+	}
+
 }
