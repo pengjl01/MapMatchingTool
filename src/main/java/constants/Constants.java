@@ -12,7 +12,7 @@ public class Constants {
 	public final static String DATA_HOME_PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\";
 //	public final static String DATA_HOME_PATH = "D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\";
 	public final static String SHP_INPUT_PATH = DATA_HOME_PATH + "myshpdata\\";
-	public final static String SHP_OUTPUT_PATH = DATA_HOME_PATH + "myshpdata\\";
+	public final static String SHP_OUTPUT_PATH = DATA_HOME_PATH + "myresultSHP\\";
 	public final static String TXT_RESULT_PATH = DATA_HOME_PATH + "myresultTXT\\";
 //最大搜索半径
 	public final static double MAX_SEARCH_DISTANCE = 200;

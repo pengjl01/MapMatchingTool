@@ -2,13 +2,8 @@ package app;
 
 import java.io.File;
 
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
-
+import app.tools.StatisticsTools;
 import constants.Constants;
-import data.datareader.SHPReader;
-import data.simplefeature.pointfeature.BJTaxiData;
-import data.simplefeature.pointfeature.PointFeature;
 
 /*
  * @author pjl
@@ -16,96 +11,42 @@ import data.simplefeature.pointfeature.PointFeature;
  * 从shp文件读取数据，统计采样间隔
  */
 public class TimeStatistics {
-	static int max = 120;
-
 	/*
-	 * 含0统计
+	 * 统计各间隔下的数据总数
 	 */
 	public static void func1() {
-		int delta = 1;
-		int[] time = new int[(max / delta)];
-		File[] inputFiles = new File(Constants.SHP_INPUT_PATH).listFiles();
-		for (File file : inputFiles) {
-			if (file.isFile() && file.getName().endsWith(".shp")) {
-				Long pretime = null;
-				SimpleFeatureCollection pointOrigin = SHPReader.readSHP(file, false);
-				SimpleFeatureIterator i = pointOrigin.features();
-				while (i.hasNext()) {
-					PointFeature pf = new BJTaxiData(i.next());
-					Long timeLong = pf.getTime();
-					if (pretime != null) {
-						int index = (int) ((timeLong - pretime) / (delta * 1000));
-						if (index == time.length)
-							index = time.length - 1;
-						time[index] += 1;
-					}
-					pretime = timeLong;
-				}
-			}
-		}
-		for (int i = 0; i < time.length; ++i) {
-//			System.out.println(i + 1 + ":" + time[i]);
-			System.out.println(time[i]);
+		for (int i = 0; i <= 5; ++i) {
+//			"D:\\study\\研究生\\毕业论文\\data\\map\\myosm"
+			StatisticsTools.countDataNumPath(Constants.SHP_INPUT_PATH, "_" + i);
 		}
 	}
 
 	/*
-	 * 
-	 * 统计总数
-	 */
-	public static void func2() {
-		int total = 0;
-//		File[] inputFiles = new File(Constants.INPUTPATH + "myshpdata\\").listFiles();
-		File[] inputFiles = new File("D:\\study\\研究生\\毕业论文\\data\\map\\myosm").listFiles();
-		for (File file : inputFiles) {
-			if (file.isFile() && file.getName().endsWith(".shp")) {
-				SimpleFeatureCollection pointOrigin = SHPReader.readSHP(file, false);
-				SimpleFeatureIterator i = pointOrigin.features();
-				while (i.hasNext()) {
-					i.next();
-					total++;
-				}
-			}
+	 * 统计各间隔下的数据数
+	 */ public static void func2() {
+		for (int i = 0; i <= 5; ++i) {
+			StatisticsTools.spaceCount(Constants.SHP_INPUT_PATH, "_" + i);
 		}
-		System.out.println("total:" + total);
 	}
 
 	/*
-	 * 不含0统计
-	 */
-	public static void func3() {
-		int delta = 5;
-		int[] time = new int[(max / delta)];
-		File[] inputFiles = new File(Constants.SHP_INPUT_PATH).listFiles();
-		for (File file : inputFiles) {
-			if (file.isFile() && file.getName().endsWith(".shp")) {
-				Long pretime = null;
-				SimpleFeatureCollection pointOrigin = SHPReader.readSHP(file, false);
-				SimpleFeatureIterator i = pointOrigin.features();
-				while (i.hasNext()) {
-					PointFeature pf = new BJTaxiData(i.next());
-					Long timeLong = pf.getTime();
-					if (pretime != null) {
-						long deltaTime = timeLong - pretime;
-						if (deltaTime != 0) {
-							int index = (int) ((deltaTime - 1) / (delta * 1000));
-							if (index == time.length)
-								index = time.length - 1;
-							time[index] += 1;
-						}
+	 * 统计各间隔下的以10秒为间隔的数据总数
+	 */ public static void func3() {
+		for (int i = 0; i <= 5; ++i) {
+			StatisticsTools.countSectionNumPath(StatisticsTools.STATISTICS_RESULT_PATH, "_" + i, 10);
+		}
+	}
 
-					}
-					pretime = timeLong;
-				}
-			}
-		}
-		for (int i = 0; i < time.length; ++i) {
-//			System.out.println(i + 1 + ":" + time[i]);
-			System.out.println(time[i]);
-		}
+	/*
+	 * 统计某个shp的数据总数
+	 */
+	public static void func4() {
+		StatisticsTools.countDataNum(
+				new File("D:\\study\\研究生\\毕业论文\\data\\data_来自es\\mydatabackup\\myshpdata\\" + "13321174830_00003.shp"));
+
 	}
 
 	public static void main(String[] args) {
-		func2();
+		func4();
 	}
 }

@@ -1,10 +1,7 @@
 package app.tools;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -31,7 +28,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import algorithm.mapmatching.Matcher;
 import data.datareader.SHPReader;
-import utils.output.OutputWriter;
+import data.tools.TXTWriter;
 
 /*
  * @author pjl
@@ -70,7 +67,7 @@ public class APPTools {
 	}
 
 	public static void doMatch(File inputSHP, String outputTXT, String outputSHP, Matcher matcher, SpatialIndex index,
-			OutputWriter ow) {
+			TXTWriter ow) {
 		SimpleFeatureCollection pointOrigin = SHPReader.readSHP(inputSHP, trans);
 		long start = System.currentTimeMillis();
 		SimpleFeatureCollection pointMatched = matcher.match(pointOrigin);
@@ -101,27 +98,27 @@ public class APPTools {
 	 * 保存结果到文件
 	 */
 	public static void saveResultTXT(List<String> ansList, String txtResult) {
-		BufferedWriter bw = null;
+		TXTWriter tw = null;
 		try {
-			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(txtResult), "UTF-8"));
+			tw = new TXTWriter(txtResult);
 			for (String s : ansList) {
-				bw.write(s);
-				bw.newLine();
+				tw.write(s);
 			}
-		} catch (IOException e) {
+			tw.close();
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		} finally {
-			if (bw != null) {
-				try {
-					bw.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try {
+				if (tw != null) {
+					tw.close();
 				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		}
 
+		}
 	}
 
 	/*

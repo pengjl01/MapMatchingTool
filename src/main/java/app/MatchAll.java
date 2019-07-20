@@ -18,7 +18,7 @@ import algorithm.mapmatching.stmm.STMM;
 import app.tools.APPTools;
 import constants.Constants;
 import data.datareader.SHPReader;
-import utils.output.OutputWriter;
+import data.tools.TXTWriter;
 
 /**
  * Hello world!
@@ -47,9 +47,9 @@ public class MatchAll {
 		matchers.add(new STDM(index));
 		matchers.add(new WMM(index));
 		matchers.add(new FWMM(index));
-		OutputWriter ow;
+		TXTWriter ow;
 		try {
-			ow = new OutputWriter(Constants.DATA_HOME_PATH + "MatchAllResult.txt");
+			ow = new TXTWriter(Constants.DATA_HOME_PATH + "MatchAllResult.txt");
 			File[] inputFiles = new File(Constants.SHP_INPUT_PATH).listFiles();
 			for (File file : inputFiles) {
 				if (file.isFile() && file.getName().endsWith(".shp")) {

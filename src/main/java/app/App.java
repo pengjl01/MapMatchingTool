@@ -43,16 +43,16 @@ public class App {
 //		Matcher m = new SimpleDistance(index);
 //		Matcher m = new HMM(index, debug);
 //		Matcher m = new WMM(index, debug);
-//		Matcher m = new FWMM(index, debug);
+		Matcher m = new FWMM(index, debug);
 //		Matcher m = new STMM(index, debug);
-		Matcher m = new STDM(index, debug);
+//		Matcher m = new STDM(index, debug);
 		String type = m.getClass().getSimpleName();
-		String FILE = "13321174881_00006";
+		String FILE = "13321174830_00003_1";
 		String outputTXT = Constants.TXT_RESULT_PATH + FILE + "_" + type + ".txt";
 		String outputSHP = Constants.SHP_OUTPUT_PATH + FILE + "_" + type + ".shp";
 		String inputSHP = Constants.SHP_INPUT_PATH + FILE + ".shp";
 		APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index, null);
-		calcAcc(FILE, type);
+		DiffTools.printAcc(FILE, type);
 //		这里优化不？
 		VisualTools.show(inputSHP, outputSHP, roadCollection);
 
@@ -71,13 +71,13 @@ public class App {
 		// display a data store file chooser dialog for shapefiles
 //      File file = JFileDataStoreChooser.showOpenFile("shp", null);
 		List<Matcher> matchers = new ArrayList<Matcher>();
-		matchers.add(new SimpleDistance(index));
 		matchers.add(new STMM(index));
+		matchers.add(new SimpleDistance(index));
 		matchers.add(new HMM(index));
 		matchers.add(new WMM(index));
 		matchers.add(new FWMM(index));
 		matchers.add(new STDM(index));
-		String FILE = "13321174881_00006";
+		String FILE = "13321174830_00003_1";
 		for (Matcher m : matchers) {
 			String type = m.getClass().getSimpleName();
 			String outputTXT = Constants.TXT_RESULT_PATH + FILE + "_" + type + ".txt";
@@ -86,7 +86,7 @@ public class App {
 			APPTools.doMatch(new File(inputSHP), outputTXT, outputSHP, m, index, null);
 //			VisualTools.show(inputSHP, outputSHP, roadCollection);
 		}
-		calcAcc(FILE);
+		DiffTools.printAcc(FILE);
 //		APPTools.doMatch(inputSHP, outputTXT, outputSHP, m, index);
 //		这里优化不？
 //		VisualTools.show(inputSHP, outputSHP, roadCollection);
@@ -118,23 +118,5 @@ public class App {
 		String inputSHP = Constants.SHP_INPUT_PATH + file1 + ".shp";
 		String outputSHP = Constants.SHP_OUTPUT_PATH + file1 + "_" + type + ".shp";
 		VisualTools.show(inputSHP, outputSHP, roadCollection);
-	}
-
-	static void calcAcc(String FILE) {
-		List<String> types = new ArrayList<String>();
-		types.add("FWMM");
-		types.add("WMM");
-		types.add("HMM");
-		types.add("SimpleDistance");
-		types.add("STMM");
-		types.add("STDM");
-//		DiffTools.makeDiff(path + trace, types);
-		DiffTools.calcAccuracy(Constants.TXT_RESULT_PATH, FILE, types);
-	}
-
-	static void calcAcc(String FILE, String type) {
-		List<String> types = new ArrayList<String>();
-		types.add(type);
-		DiffTools.calcAccuracy(Constants.TXT_RESULT_PATH, FILE, types);
 	}
 }

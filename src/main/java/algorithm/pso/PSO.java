@@ -10,7 +10,7 @@ import app.tools.APPTools;
 import app.tools.AccData;
 import app.tools.DiffTools;
 import constants.Constants;
-import utils.output.OutputWriter;
+import data.tools.TXTWriter;
 
 /*
  * @author pjl
@@ -30,7 +30,7 @@ public class PSO {
 	PSONode[] populationData;
 	int step = 0;
 	boolean debug = false;
-	OutputWriter ow;
+	TXTWriter ow;
 
 	protected PSO() {
 
@@ -42,7 +42,7 @@ public class PSO {
 		this.truth = truth;
 		gBestN = new double[3];
 		initPopulation();
-		ow = new OutputWriter(Constants.TXT_RESULT_PATH + "PSOResult.txt");
+		ow = new TXTWriter(Constants.TXT_RESULT_PATH + "PSOResult.txt");
 	}
 
 	public PSO(WMM m, SimpleFeatureCollection pointOrigin, List<String> truth, boolean debug) {
