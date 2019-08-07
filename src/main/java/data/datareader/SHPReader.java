@@ -32,7 +32,7 @@ public class SHPReader {
 				try {
 					while (iterator.hasNext()) {
 						SimpleFeature next = iterator.next();
-						System.out.println(next.getProperty("the_geom").getValue());
+//						System.out.println(next.getProperty("the_geom").getValue());
 						GridTrans.trans((Geometry) next.getProperty("the_geom").getValue());
 //						System.out.println(next.getProperty("the_geom").getValue());
 						list.add(next);
