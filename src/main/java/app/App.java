@@ -28,7 +28,7 @@ public class App {
 	static boolean trans = true;
 
 	public static void main(String[] args) throws Exception {
-		func2();
+		func3();
 	}
 
 	/*
@@ -100,7 +100,7 @@ public class App {
 	 * 仅展示，单线
 	 */
 	static void func3() {
-		String file1 = "13321174830_00003";
+		String file1 = "13321174830_00003_1";
 //		String file2 = "13321164368_00044";
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
 		String inputSHP = Constants.SHP_INPUT_PATH + file1 + ".shp";

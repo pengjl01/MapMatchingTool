@@ -32,6 +32,7 @@ public class StatisticsTools {
 	public static void spaceCount(String path, String suffix) {
 		int[] time = new int[(max)];
 		File[] inputFiles = new File(path).listFiles();
+		int sum = 0;
 		for (File file : inputFiles) {
 			if (file.isFile() && file.getName().endsWith(suffix + ".shp")) {
 				Long pretime = null;
@@ -42,12 +43,11 @@ public class StatisticsTools {
 					Long timeLong = pf.getTime();
 					if (pretime != null) {
 						int index = (int) ((timeLong - pretime) / (1000));
-						if (index == time.length)
-							index = time.length - 1;
 						if (index >= time.length) {
 							System.out.println("max is too small. max=" + max + " space=" + index);
 						} else {
 							time[index] += 1;
+							sum += 1;
 						}
 					}
 					pretime = timeLong;
@@ -57,6 +57,7 @@ public class StatisticsTools {
 		}
 		try {
 			TXTWriter tw = new TXTWriter(STATISTICS_RESULT_PATH + suffix);
+			tw.write(sum);
 			for (int i = 0; i < time.length; ++i) {
 				tw.write(time[i]);
 			}
@@ -87,6 +88,9 @@ public class StatisticsTools {
 		return ans;
 	}
 
+	/*
+	 * 对目录下所有进行分段统计
+	 */
 	public static void countSectionNumPath(String path, String suffix, int interval) {
 		File[] inputFiles = new File(path).listFiles();
 		int[] sum = null;

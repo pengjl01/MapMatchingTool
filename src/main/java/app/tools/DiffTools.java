@@ -149,7 +149,7 @@ public class DiffTools {
 			if (file.isFile() && file.getName().endsWith(suffix + "_" + type + ".txt")) {
 				String name = file.getName().replaceAll("[.][^.]+$", "");
 				if (name.endsWith(type)) {
-					name = name.substring(0, 19);
+					name = name.substring(0, 17);
 					AccData t = calcAcc(name, type, suffix);
 					ans.plus(t);
 				}
@@ -163,9 +163,9 @@ public class DiffTools {
 	 * 计算type算法下以suffix为后缀的name轨迹的正确率
 	 */
 	public static AccData calcAcc(String name, String type, String suffix) {
-		String truthFileName = DiffTools.truthFileName(Constants.TXT_RESULT_PATH, name);
+		String truthFileName = DiffTools.truthFileName(Constants.TXT_RESULT_PATH, name + "_" + suffix);
 		List<String> truth = DiffTools.file2List(truthFileName);
-		String ansFileName = DiffTools.inputFileName(Constants.TXT_RESULT_PATH, name, type);
+		String ansFileName = DiffTools.inputFileName(Constants.TXT_RESULT_PATH, name + "_" + suffix, type);
 		List<String> data = DiffTools.file2List(ansFileName);
 		return DiffTools.calcAcc(truth, data, type);
 	}

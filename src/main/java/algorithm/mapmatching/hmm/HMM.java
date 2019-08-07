@@ -33,7 +33,6 @@ public class HMM extends MatcherIMPL {
 
 	protected static double BETA = 5;
 	protected static double MAX_RADIUS = 200;
-	protected static double RADIUS = 20;
 	protected static double LowProbabilityRoutes = 2000;
 	/*
 	 * 当前节点之前有多少个奇异点
@@ -88,7 +87,7 @@ public class HMM extends MatcherIMPL {
 			matchingFeatureIndexs.add(i);
 			preDatetime = datetime;
 			preState = nextState;
-		} else {// 否则gap++，不覆盖上一个状态
+		} else {// 否则gap++，不覆盖上一个状态,并将该店匹配至最近的道路上
 			String osm_id = null;
 			PointFeature temp = origin.get(i);
 			Point p = temp.getPoint();
