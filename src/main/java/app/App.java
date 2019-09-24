@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.map.MapContent;
+import org.geotools.swing.JMapFrame;
 import org.locationtech.jts.index.SpatialIndex;
 
 import algorithm.mapmatching.Matcher;
@@ -28,7 +30,7 @@ public class App {
 	static boolean trans = true;
 
 	public static void main(String[] args) throws Exception {
-		func3();
+		func4();
 	}
 
 	/*
@@ -100,7 +102,7 @@ public class App {
 	 * 仅展示，单线
 	 */
 	static void func3() {
-		String file1 = "13321174830_00003_1";
+		String file1 = "13321174830_00005_0";
 //		String file2 = "13321164368_00044";
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
 		String inputSHP = Constants.SHP_INPUT_PATH + file1 + ".shp";
@@ -112,11 +114,19 @@ public class App {
 	 * 仅展示，对照原始数据
 	 */
 	static void func4() {
-		String file1 = "13331194450_00003";
-		String type = "WMM";
+		String file1 = "13321174830_00005_0";
+		String type = "FWMM";
 		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(Constants.ROADFILE), trans);
 		String inputSHP = Constants.SHP_INPUT_PATH + file1 + ".shp";
 		String outputSHP = Constants.SHP_OUTPUT_PATH + file1 + "_" + type + ".shp";
 		VisualTools.show(inputSHP, outputSHP, roadCollection);
+	}
+
+	static void func5() {
+		String fileString = "D:\\study\\研究生\\毕业论文\\data\\map\\osm\\gis_osm_roads_free\\gis_osm_roads_free_1.shp";
+		SimpleFeatureCollection roadCollection = SHPReader.readSHP(new File(fileString), false);
+		MapContent map = new MapContent();
+		VisualTools.addRoad(map, roadCollection);
+		JMapFrame.showMap(map);
 	}
 }
